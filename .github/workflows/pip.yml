@@ -29,7 +29,7 @@ jobs:
         run: |
           sudo pip install -Uq pip && sudo pip install -Uq setuptools wheel twine
           sudo python setup.py install
-          aloha
+          aloha info
 
       - name: pypi-publish
         env:
@@ -38,7 +38,7 @@ jobs:
         run: |
           ls -alh
           sudo python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-          sudo python setup.py sdist bdist_wheel
+          sudo python setup.py sdist bdist_wheel clean -all
           ls -alh ./dist
           if [ "$GITHUB_REPOSITORY" = "QPod/aloha" ] ; then
             twine upload dist/* --verbose -u "$TWINE_USERNAME" -p "$TWINE_PASSWORD" ;
