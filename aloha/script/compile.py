@@ -78,10 +78,5 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     print("\n\nSuccessfully finished building package to: ", path_build)
 
 
-def main():
-    from .base import subparsers as parser
-    parser = parser['compile']
-    kwargs, _ = parser.parse_known_args()
-    kwargs = vars(kwargs)
-
-    build(**kwargs)
+def main(*args, **kwargs):
+    build(*args, **kwargs)

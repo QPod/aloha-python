@@ -1,6 +1,6 @@
 import importlib
 
-from .base import parser
+from .base import parser, subparsers
 
 
 def main():
@@ -15,7 +15,12 @@ def main():
         exit(-1)
 
     func_main = getattr(module, 'main')
-    exit(func_main())
+
+    sub_parser = subparsers[cmd]
+    kwargs, _ = sub_parser.parse_known_args()
+    kwargs = vars(kwargs)
+
+    exit(func_main(**kwargs))
 
 
 if __name__ == '__main__':
