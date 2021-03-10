@@ -7,4 +7,5 @@ def main():
 
     args, _ = parser.parse_known_args()
     if args.version:
-        print('123')
+        from .. import __version__
+        print('Aloha version: %s' % __version__)
