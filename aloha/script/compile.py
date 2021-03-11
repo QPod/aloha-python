@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# This script build a given python package into a package of dynamic library (.so) files.
+
 __all__ = ('build', 'main')
 
 import glob
@@ -72,7 +75,6 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     for c_module in cythonized:
         for c_file in c_module.sources:
             os.remove(c_file)
-
     for py_file in target_cythonize:
         os.remove(py_file)
 
@@ -86,3 +88,12 @@ def main(*args, **kwargs):
     build(*args, **kwargs)
     t = time.time() - t
     print('Time consumed to build code: %s seconds.' % t)
+
+
+if __name__ == '__main__':
+    build(
+        base=None,         # use current directory by default
+        dist='build',     # target directory for build files
+        exclude=[__file__],  # exclude this file by default, this is a collection of files/folders to exclude
+        keep=['./main.py'],  # source files keep as is and not converting to dynamic library
+    )
