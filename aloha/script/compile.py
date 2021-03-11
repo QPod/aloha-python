@@ -3,6 +3,7 @@ __all__ = ('build', 'main')
 import glob
 import os
 import shutil
+import time
 from collections import defaultdict
 from distutils.core import setup
 
@@ -58,12 +59,14 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
 
     target_cythonize = [dst for (src, dst) in act_list.get('cythonize', ())]
 
+    n_parallel = os.cpu_count() or 8
+
     # python code -> c code
-    cythonized = cythonize(target_cythonize, nthreads=16)
+    cythonized = cythonize(target_cythonize, nthreads=n_parallel)
 
     # c code -> dynamic library file
     path_build_tmp = os.path.join(path_build, '.tmp')
-    setup(ext_modules=cythonized, script_args=["build_ext", "-b", path_build, "-t", path_build_tmp])
+    setup(ext_modules=cythonized, script_args=["build_ext", "-b", path_build, "-t", path_build_tmp, "-j", n_parallel])
 
     # clean up
     for c_module in cythonized:
@@ -79,4 +82,7 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
 
 
 def main(*args, **kwargs):
+    t = time.time()
     build(*args, **kwargs)
+    t = time.time() - t
+    print('Time consumed to build code: %s seconds.' % t)
