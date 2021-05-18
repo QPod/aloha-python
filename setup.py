@@ -16,8 +16,13 @@ setup(
     version=_version,
     author='QPod',
     author_email='45032326+QPod0@users.noreply.github.com',
+    license='Apache Software License',
     url='https://github.com/QPod/aloha',
-    license='BSD',
+    project_urls={
+        'Source': 'https://github.com/QPod/aloha',
+        'CI Pipeline': 'https://github.com/QPod/aloha/actions',
+        'Documentation': 'https://github.com/QPod/aloha/wiki',
+    },
 
     packages=find_packages(where="."),
     include_package_data=True,
@@ -25,14 +30,14 @@ setup(
     platforms='Linux, Mac OS X, Windows',
     zip_safe=False,
     install_requires=[
-        'pyhocon'
+        'pyhocon', 'pycryptodome'
     ],
     extras_require={
         'build': ['Cython'],
         'service': ['tornado'],
         'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo'],
         'data': ['pandas'],
-        'report': ['openpyxl']
+        'report': ['openpyxl>=3']
     },
     python_requires='>=3.6',
     entry_points={

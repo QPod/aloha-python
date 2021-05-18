@@ -24,7 +24,7 @@ def _expand(patterns: list = None):
 
 def build(base: str = None, dist: str = 'build', exclude: list = None, keep: list = None, copy_others=True):
     path_base = base or os.path.abspath('.')
-    path_build = os.path.join(path_base, dist)
+    path_build = dist or os.path.abspath(dist)
     files_exclude = _expand(exclude or [])  # sorted(set(os.path.abspath(i) for i in files_exclude))
     files_keep = _expand(keep or [])  # sorted(set((os.path.abspath(i) for i in files_keep)))
 
@@ -45,9 +45,11 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
             if path in files_exclude or extension in ('.pyc', 'pyx') or name.startswith('.'):
                 continue  # skip: excluded files, pyc/pyx files, and hidden files
 
+            path_full = os.path.abspath(path)
+
             action = 'copy'
             if extension in ('.py',):
-                if not name.startswith('__') and path not in files_keep:
+                if not name.startswith('__') and path_full not in files_keep:
                     action = 'cythonize'
             elif not copy_others:
                 continue  # if not copying other files, skip the file
@@ -91,9 +93,9 @@ def main(*args, **kwargs):
 
 
 if __name__ == '__main__':
-    build(
-        base=None,         # use current directory by default
-        dist='build',     # target directory for build files
+    main(
+        base=None,  # use current directory by default
+        dist='build',  # target directory for build files
         exclude=[__file__],  # exclude this file by default, this is a collection of files/folders to exclude
         keep=['./main.py'],  # source files keep as is and not converting to dynamic library
     )
