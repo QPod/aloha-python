@@ -67,7 +67,7 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     n_parallel = os.cpu_count() or 8
 
     # python code -> c code
-    cythonized = cythonize(target_cythonize, nthreads=n_parallel)
+    cythonized = cythonize(target_cythonize, nthreads=n_parallel, language_level='3')
 
     # c code -> dynamic library file
     path_build_tmp = os.path.join(path_build, '.tmp')
