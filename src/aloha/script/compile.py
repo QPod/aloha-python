@@ -67,7 +67,7 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     n_parallel = os.cpu_count() or 8
 
     # python code -> c code
-    cythonized = cythonize(target_cythonize, nthreads=n_parallel, language_level='3')
+    cythonized = cythonize(target_cythonize, nthreads=n_parallel, language_level=3)
 
     # c code -> dynamic library file
     path_build_tmp = os.path.join(path_build, '.tmp')
@@ -89,13 +89,21 @@ def main(*args, **kwargs):
     t = time.time()
     build(*args, **kwargs)
     t = time.time() - t
-    print('Time consumed to build code: %s seconds.' % t)
+    print('Time consumed to build code: %.2f seconds.' % t)
 
 
 if __name__ == '__main__':
+    os.makedirs('build', exist_ok=True)
+    shutil.rmtree('build')
+    folder_name = os.getcwd().split(os.sep)[-1]
+    folder_dist = os.path.join('/tmp/build/', folder_name)
+    print('Building project to path:', folder_dist)
+    shutil.rmtree(folder_dist, ignore_errors=True)
+
     main(
         base=None,  # use current directory by default
-        dist='build',  # target directory for build files
+        dist=folder_dist,  # target directory for build files
         exclude=[__file__],  # exclude this file by default, this is a collection of files/folders to exclude
         keep=['./main.py'],  # source files keep as is and not converting to dynamic library
     )
+    shutil.move(src=folder_dist, dst='./build')

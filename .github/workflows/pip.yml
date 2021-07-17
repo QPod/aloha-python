@@ -28,6 +28,7 @@ jobs:
       - name: pip-install-test
         run: |
           sudo pip install -Uq pip && sudo pip install -Uq setuptools wheel twine
+          cd src
           sudo python setup.py install clean --all
           aloha info -v
 
@@ -36,7 +37,7 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
         run: |
-          ls -alh
+          cd src && ls -alh
           sudo python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
           sudo python setup.py sdist bdist_wheel
           ls -alh ./dist
