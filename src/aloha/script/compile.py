@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# This script build a given python package into a package of dynamic library (.so) files.
+
 __all__ = ('build', 'main')
 
 import glob
@@ -21,7 +24,7 @@ def _expand(patterns: list = None):
 
 def build(base: str = None, dist: str = 'build', exclude: list = None, keep: list = None, copy_others=True):
     path_base = base or os.path.abspath('.')
-    path_build = os.path.join(path_base, dist)
+    path_build = dist or os.path.abspath(dist)
     files_exclude = _expand(exclude or [])  # sorted(set(os.path.abspath(i) for i in files_exclude))
     files_keep = _expand(keep or [])  # sorted(set((os.path.abspath(i) for i in files_keep)))
 
@@ -42,9 +45,11 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
             if path in files_exclude or extension in ('.pyc', 'pyx') or name.startswith('.'):
                 continue  # skip: excluded files, pyc/pyx files, and hidden files
 
+            path_full = os.path.abspath(path)
+
             action = 'copy'
             if extension in ('.py',):
-                if not name.startswith('__') and path not in files_keep:
+                if not name.startswith('__') and path_full not in files_keep:
                     action = 'cythonize'
             elif not copy_others:
                 continue  # if not copying other files, skip the file
@@ -62,7 +67,7 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     n_parallel = os.cpu_count() or 8
 
     # python code -> c code
-    cythonized = cythonize(target_cythonize, nthreads=n_parallel)
+    cythonized = cythonize(target_cythonize, nthreads=n_parallel, language_level=3)
 
     # c code -> dynamic library file
     path_build_tmp = os.path.join(path_build, '.tmp')
@@ -72,7 +77,6 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     for c_module in cythonized:
         for c_file in c_module.sources:
             os.remove(c_file)
-
     for py_file in target_cythonize:
         os.remove(py_file)
 
@@ -85,4 +89,21 @@ def main(*args, **kwargs):
     t = time.time()
     build(*args, **kwargs)
     t = time.time() - t
-    print('Time consumed to build code: %s seconds.' % t)
+    print('Time consumed to build code: %.2f seconds.' % t)
+
+
+if __name__ == '__main__':
+    os.makedirs('build', exist_ok=True)
+    shutil.rmtree('build')
+    folder_name = os.getcwd().split(os.sep)[-1]
+    folder_dist = os.path.join('/tmp/build/', folder_name)
+    print('Building project to path:', folder_dist)
+    shutil.rmtree(folder_dist, ignore_errors=True)
+
+    main(
+        base=None,  # use current directory by default
+        dist=folder_dist,  # target directory for build files
+        exclude=[__file__],  # exclude this file by default, this is a collection of files/folders to exclude
+        keep=['./main.py'],  # source files keep as is and not converting to dynamic library
+    )
+    shutil.move(src=folder_dist, dst='./build')
