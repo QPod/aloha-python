@@ -23,13 +23,15 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # sudo python setup.py install clean --all
       - uses: actions/checkout@v2
 
       - name: pip-install-test
         run: |
-          sudo pip install -Uq pip && sudo pip install -Uq setuptools wheel twine
+          sudo pip install -UI pip && sudo pip install -UI setuptools wheel twine
           cd src
-          sudo python setup.py install clean --all
+          sudo python setup.py sdist bdist_wheel
+          pip install ./dist/*.tar.gz
           aloha info -v
 
       - name: pypi-publish

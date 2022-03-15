@@ -1,10 +1,9 @@
 import psycopg2
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
 from .base import password_vault
 from ..logger import LOG
-
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
 
 LOG.debug('postgres: psycopg2 version = %s' % psycopg2.__version__)
 
@@ -18,15 +17,19 @@ class PostgresOperator:
             'port': db_config['port'],
             'dbname': db_config['dbname']
         }
-        LOG.debug("PostgreSQL connection info: " + str(self._config['host']))
+        connect_args = {}
+        if 'schema' in db_config:
+            connect_args['options'] = '-csearch_path={}'.format(db_config['schema'])
 
         try:
             self.engine = create_engine(
                 'postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}'.format(**self._config),
-                client_encoding='utf8', encoding='utf-8', pool_size=20, max_overflow=0, **kwargs
+                connect_args=connect_args, client_encoding='utf8', encoding='utf-8',
+                pool_size=20, max_overflow=10, pool_pre_ping=True, **kwargs
             )
+            LOG.debug("PostgresSQL connected: {host}:{port}/{dbname}".format(**self._config))
         except Exception as e:
-            LOG.exception(e)
+            LOG.error(e)
             raise RuntimeError('Failed to connect to PostgresSQL')
 
     @property
@@ -36,5 +39,4 @@ class PostgresOperator:
     def execute_query(self, sql, *args, **kwargs):
         with self.engine.connect() as conn:
             cur = conn.execute(text(sql), *args, **kwargs)
-            result = cur.fetchall()
-            return result
+            return cur
