@@ -17,13 +17,13 @@ class MySqlOperator:
             'port': db_config['port'],
             'dbname': db_config['dbname']
         }
-        LOG.debug("MySQL connection info: " + str(self._config['host']))
 
         try:
             self.db = create_engine(
                 'mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}'.format(**self._config),
                 encoding='utf-8', pool_size=50, pool_recycle=500, pool_pre_ping=True, **kwargs
             )
+            LOG.debug("MySQL connected: {host}:{port}/{dbname}".format(**self._config))
         except Exception as e:
             LOG.exception(e)
             raise RuntimeError('Failed to connect to MySQL')
@@ -35,5 +35,4 @@ class MySqlOperator:
     def execute_query(self, sql, *args, **kwargs):
         with self.db.connect() as conn:
             cur = conn.execute(text(sql), *args, **kwargs)
-            result = cur.fetchall()
-            return result
+            return cur

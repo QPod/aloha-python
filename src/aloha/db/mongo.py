@@ -82,6 +82,15 @@ class _MongoDBOperation:
         return True
 
     def check_and_get_collection(self, collection_name=None, raise_if_not_exists=True):
+        """
+        检查collection是否存在，如果存在则返回collection对象，否则抛出异常
+        Args:
+            @param collection_name: str或unicode    collection名称
+        Returns:
+            @return: collection对象
+        Raises:
+            @raise Exception: 如果collection在对应db中不存在，则
+        """
         self.db = self.conn[self.db_name]
 
         if self.collection_name is not None:
@@ -155,6 +164,17 @@ class _MongoDBOperation:
             LOG.exception(e)
 
     def query(self, field_filter=None, sort=None, limit=40, skip=0, collection_name=None):
+        """
+        从mongo查询数据
+        Args:
+            @param field_filter: dict     根据mongo查询语法构造查询条件
+            @param sort: array      排序条件，例如：[("company_name",pymongo.ASCENDING), ("_id",pymongo.ASCENDING)]
+            @param limit: int       查询条数
+            @param skip: int        controls the starting point of the results set
+            @param collection_name: str    collection名称，在建立完连接后可动态更换要查询的collection
+        Returns:
+            @return: 返回查询结果的游标对象
+        """
         try:
             collection = self.check_and_get_collection(collection_name)
             if sort:
@@ -166,6 +186,13 @@ class _MongoDBOperation:
             LOG.exception(e)
 
     def find_many(self, field_filter=None, projection=None, collection_name=None, *args, **kwargs):
+        """
+        从mongo查询数据，返回所有返回数据的游标
+        Args:
+            @param field_filter: dict     根据mongo查询语法构造查询条件
+            @param projection: dict     限制返回的字段 exmaple: { name: 1, contribs: 1, _id: 0 }
+            @param collection_name: str    collection名称，在建立完连接后可动态更换要查询的collection
+        """
         try:
             collection = self.check_and_get_collection(collection_name)
             result = collection.find(field_filter or {}, projection, *args, **kwargs)
@@ -174,6 +201,13 @@ class _MongoDBOperation:
             LOG.exception(e)
 
     def find_one(self, field_filter=None, projection=None, collection_name=None, *args, **kwargs):
+        """
+        从mongo查询数据,只返回单个结果
+        Args:
+            @param field_filter: dict     根据mongo查询语法构造查询条件
+            @param projection: dict     限制返回的字段 exmaple: { name: 1, contribs: 1, _id: 0 }
+            @param collection_name: str    collection名称，在建立完连接后可动态更换要查询的collection
+        """
         try:
             collection = self.check_and_get_collection(collection_name)
             result = collection.find_one(field_filter or {}, projection, *args, **kwargs)
@@ -182,6 +216,12 @@ class _MongoDBOperation:
             LOG.exception(e)
 
     def count(self, field_filter=None, collection_name=None):
+        """
+        从mongo查询数据条数
+        Args:
+            @param field_filter: dict    根据mongo查询语法构造查询条件
+            @param collection_name: str    collection名称，在建立完连接后可动态更换要查询的collection
+        """
         try:
             collection = self.check_and_get_collection(collection_name)
             result = collection.count_documents(field_filter or {})

@@ -35,11 +35,12 @@ setup(
     extras_require={
         'build': ['Cython'],
         'service': ['tornado'],
-        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo'],
+        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.1.0'],
+        'stream': ['confluent_kafka'],
         'data': ['pandas'],
         'report': ['openpyxl>=3']
     },
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     entry_points={
         'console_scripts': [
             'aloha = aloha.script.entry_points:main'

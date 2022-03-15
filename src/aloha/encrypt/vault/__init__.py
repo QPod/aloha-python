@@ -1,2 +1,2 @@
-from .cyberark import CyberarkVault
+from .cyberark import CyberArkVault
 from .plain import PlainVault

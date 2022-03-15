@@ -10,7 +10,7 @@ class MultiProcessSafeDailyRotatingFileHandler(BaseRotatingHandler):
     - Utc not supported
     """
 
-    def __init__(self, filename: str, encoding=None, delay=False, utc=False, **kwargs):
+    def __init__(self, filename: str, encoding='utf8', delay=False, utc=False, **kwargs):
         self.utc = utc
         self.suffix = "%Y-%m%d"
         self.baseFilename = filename
