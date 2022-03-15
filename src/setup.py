@@ -30,7 +30,7 @@ setup(
     platforms='Linux, Mac OS X, Windows',
     zip_safe=False,
     install_requires=[
-        'pyhocon', 'pycryptodomex'
+        'pyhocon', 'pycryptodome'
     ],
     extras_require={
         'build': ['Cython'],
