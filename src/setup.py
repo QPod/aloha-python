@@ -40,7 +40,7 @@ setup(
         'data': ['pandas'],
         'report': ['openpyxl>=3']
     },
-    python_requires='>=3.8',
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': [
             'aloha = aloha.script.entry_points:main'

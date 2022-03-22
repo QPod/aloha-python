@@ -12,6 +12,6 @@ class PlainVault(AesEncryptor, BaseVault):
 
 def main():
     vault = PlainVault()
-    pwd = vault.get_password('1c3b988ed369d7c6126652aabb582b29', url_quote=True)
+    pwd = vault.get_password(None, url_quote=True)
     # print(pwd)
     return pwd

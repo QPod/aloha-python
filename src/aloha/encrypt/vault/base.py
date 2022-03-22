@@ -9,7 +9,11 @@ class BaseVault(ABC):
 
     def get_password(self, *args, **kwargs):
         url_quote = kwargs.pop('url_quote', True)
+
         pwd = self.decrypt_password(*args, **kwargs)
+        if pwd is None:
+            return None
+
         if url_quote:
             return urlquote(pwd)
         else:
@@ -23,6 +27,6 @@ class DummyVault(BaseVault):
 
 def main():
     vault = DummyVault()
-    ret = vault.get_password('1c3b988ed369d7c6126652aabb582b29', url_quote=True)
+    ret = vault.get_password(None, url_quote=True)
     # print(ret)
     return ret
