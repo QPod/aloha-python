@@ -86,14 +86,14 @@ class CyberArkVault(BaseVault, AesEncryptor):
 
 
 def main():
-    cybeark = CyberArkVault(
-        url='https://prdnew-ccp.paic.com.cn/pidms/rest/pwd/getPassword',
-        app_id='App_PAMD_ASKBOB_GP__1d34f5',
-        safe='AIM_PAMD_ASKBOB_GP',
+    vault = CyberArkVault(
+        url='https://localhost/pidms/rest/pwd/getPassword',
+        app_id='',
+        safe='',
         folder='root',
-        key='e17998594334dda5',
+        key='',
     )
 
     for _ in range(5):
-        pwd = cybeark.get_password({'object': 'DB-GPLOG-MONGODB'})
+        pwd = vault.get_password({'object': 'DB-*'})
         # print(pwd)
