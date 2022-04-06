@@ -4,7 +4,7 @@ from abc import ABC
 import requests
 
 from .unit import UnitTestCase
-from ..service.v1.caller import APICaller
+from ..service.v1 import APICaller
 
 
 class ServiceTestCase(UnitTestCase, ABC, APICaller):

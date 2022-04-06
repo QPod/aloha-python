@@ -1,3 +1,5 @@
+__all__ = ('PostgresOperator',)
+
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text

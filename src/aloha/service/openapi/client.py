@@ -12,7 +12,7 @@ except ImportError:
     from json import JSONDecodeError
 
 
-class EsgClient:
+class OpenApiClient:
     def __init__(self, url_oauth_get_token: str, client_id: str, client_secret: str, grant_type: str = 'client_credentials'):
         self.url_oauth_get_token = url_oauth_get_token
         self.client_id = client_id

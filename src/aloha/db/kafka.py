@@ -1,3 +1,5 @@
+__all__ = ('KafkaOperator',)
+
 import json
 import typing
 import confluent_kafka as kafka

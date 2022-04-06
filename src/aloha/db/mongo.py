@@ -1,3 +1,5 @@
+__all__ = ('MongoOperator',)
+
 import ipaddress
 import json
 
@@ -43,7 +45,6 @@ class _MongoDBOperation:
         self.db_name, self.collection_name = db_name, collection_name
 
         host = config['host']
-        LOG.debug("Mongo connection info: %s", 'host')
 
         if config.get('port') is None and isinstance(host, list):
             hosts = ['{host}:{port}'.format(**h) for h in host]
@@ -64,6 +65,7 @@ class _MongoDBOperation:
             'maxPoolSize': config.get('maxPoolSize'),
             'authSource': config.get('authSource', db_name)
         }
+        LOG.debug(_config)
 
         try:
             self.conn = pymongo.MongoClient(**_config)

@@ -1,7 +1,7 @@
 from abc import ABC
 
 from .unit import UnitTestCase
-from ..service.v2.caller import APICaller
+from ..service.v2 import APICaller
 
 
 class ServiceTestCase(UnitTestCase, ABC, APICaller):
