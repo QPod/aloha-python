@@ -4,7 +4,6 @@ import socket
 from os.path import join as pjoin
 
 from .handler import MultiProcessSafeDailyRotatingFileHandler
-from ..settings import SETTINGS
 
 
 def setup_logger(logger: logging.Logger, level: int = logging.DEBUG, logger_name: str = None, module: str = None, formatter_str: str = None):
@@ -15,6 +14,7 @@ def setup_logger(logger: logging.Logger, level: int = logging.DEBUG, logger_name
         os.makedirs(folder, exist_ok=True)
 
         if module is None:
+            from ..settings import SETTINGS
             module = SETTINGS.config.get('APP_MODULE') or os.environ.get('APP_MODULE', 'default')
 
         if logger_name is not None and len(logger_name) > 0:

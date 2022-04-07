@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # This script build a given python package into a package of dynamic library (.so) files.
 
-__all__ = ('build', 'main')
+__all__ = ('build', 'package')
 
+from collections import defaultdict
+
+import argparse
 import glob
 import os
 import shutil
 import time
-from collections import defaultdict
-from distutils.core import setup
-
 from Cython.Build import cythonize
+from distutils.core import setup
 
 
 def _expand(patterns: list = None):
@@ -22,9 +23,20 @@ def _expand(patterns: list = None):
     return files
 
 
+def _delete(file_path: str, ignore_errors=True):
+    try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+    except Exception as e:
+        if not ignore_errors:
+            raise e
+
+
 def build(base: str = None, dist: str = 'build', exclude: list = None, keep: list = None, copy_others=True):
-    path_base = base or os.path.abspath('.')
-    path_build = dist or os.path.abspath(dist)
+    path_base = os.path.abspath(base)
+    path_build = os.path.abspath(dist)
     files_exclude = _expand(exclude or [])  # sorted(set(os.path.abspath(i) for i in files_exclude))
     files_keep = _expand(keep or [])  # sorted(set((os.path.abspath(i) for i in files_keep)))
 
@@ -80,30 +92,51 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     for py_file in target_cythonize:
         os.remove(py_file)
 
-    shutil.rmtree(path_build_tmp)
+    _delete(path_build_tmp)
 
     print("\n\nSuccessfully finished building package to: ", path_build)
 
 
-def main(*args, **kwargs):
+def package(base: str = None, dist: str = 'build', exclude: list = None, keep: list = None, copy_others=True, *args, **kwargs):
     t = time.time()
-    build(*args, **kwargs)
+
+    path_base = os.path.abspath(base or './')
+    path_dist = os.path.abspath(dist)
+
+    folder_name = os.getcwd().split(os.sep)[-1]
+    folder_temp = os.path.join('/tmp/build/', folder_name)
+    print('Building project to path:', folder_temp)
+    _delete(folder_temp, ignore_errors=True)  # clear the folder first
+
+    build(
+        base=path_base,  # use current directory by default
+        dist=folder_temp,  # target directory for build files
+        exclude=exclude,  # exclude this file by default, this is a collection of files/folders to exclude
+        keep=keep,  # source files keep as is and not converting to dynamic library
+        copy_others=copy_others
+    )
     t = time.time() - t
     print('Time consumed to build code: %.2f seconds.' % t)
 
+    [_delete(f) for f in glob.glob(path_dist + '/*')]
+    os.makedirs(path_dist, exist_ok=True)
+    [shutil.move(f, os.path.join(path_dist, f.split(os.sep)[-1])) for f in glob.glob(folder_temp + '/*')]
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument('--base', type=str, help='root folder which includes source code to build')
+    p.add_argument('--dist', type=str, default='build', help='target folder for the binary code')
+    p.add_argument('--exclude', type=str, nargs='*', default=(), help='a collection of files/folders to exclude')
+    p.add_argument('--keep', type=str, nargs='*', default=(), help='source files keep as is and not converting to dynamic library')
+
+    args = p.parse_args()
+    args = vars(args)
+    for k, v in args.items():
+        print('%s = %s' % (k, v))
+    package(**args)
+
 
 if __name__ == '__main__':
-    os.makedirs('build', exist_ok=True)
-    shutil.rmtree('build')
-    folder_name = os.getcwd().split(os.sep)[-1]
-    folder_dist = os.path.join('/tmp/build/', folder_name)
-    print('Building project to path:', folder_dist)
-    shutil.rmtree(folder_dist, ignore_errors=True)
-
-    main(
-        base=None,  # use current directory by default
-        dist=folder_dist,  # target directory for build files
-        exclude=[__file__],  # exclude this file by default, this is a collection of files/folders to exclude
-        keep=['./main.py'],  # source files keep as is and not converting to dynamic library
-    )
-    shutil.move(src=folder_dist, dst='./build')
+    """python -m aloha.script.compile --base=./ --dist=../build --keep='main.py'"""
+    main()
