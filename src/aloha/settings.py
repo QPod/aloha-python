@@ -21,7 +21,10 @@ class Settings:
         if self._config is None:
             # load config items from hocon config files
             _file_config_main = os.path.join(self.config_dir, 'main.conf')
-            self._config = load_config_from_hocon(_file_config_main)
+            if os.path.exists(_file_config_main):
+                self._config = load_config_from_hocon(_file_config_main)
+            else:
+                self._config = {}
         return self._config
 
     def __getitem__(self, item):
