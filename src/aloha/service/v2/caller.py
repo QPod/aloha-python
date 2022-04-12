@@ -1,6 +1,7 @@
-import requests
 import uuid
 from datetime import datetime, timedelta
+
+import requests
 
 from ...encrypt.jwt import encode
 from ...logger import LOG
@@ -46,10 +47,15 @@ class APICaller:
         """
         LOG.debug('Calling API: %s' % api_url)
         # LOG.debug('Param: %s' % json.dumps(kwargs, ensure_ascii=False))
+
         resp = requests.post(
-            api_url,
-            json=kwargs,
-            timeout=timeout,
-            headers=cls.get_headers()
-        ).json()
-        return resp
+            api_url, json=kwargs, timeout=timeout, headers=cls.get_headers()
+        )
+
+        try:
+            ret = resp.json()
+        except Exception as e:
+            LOG.error(str(e))
+            raise RuntimeError(resp.text)
+
+        return ret

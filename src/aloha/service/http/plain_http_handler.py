@@ -2,7 +2,7 @@ from tornado import web
 from typing import Optional, Awaitable
 
 
-class BaseHandler(web.RequestHandler):
+class PlainHttpHandler(web.RequestHandler):
     def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
 

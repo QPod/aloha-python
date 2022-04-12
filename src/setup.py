@@ -34,7 +34,7 @@ setup(
     ],
     extras_require={
         'build': ['Cython'],
-        'service': ['tornado'],
+        'service': ['tornado', 'psutil'],
         'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.1.0'],
         'stream': ['confluent_kafka'],
         'data': ['pandas'],
