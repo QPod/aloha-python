@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -24,7 +24,7 @@ setup(
         'Documentation': 'https://github.com/QPod/aloha/wiki',
     },
 
-    packages=['aloha'],  # find_packages(where="."),
+    packages=find_packages(where=".", exclude=("app_demo*",)),
     include_package_data=True,
     package_data={},
     platforms='Linux, Mac OS X, Windows',
