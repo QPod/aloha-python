@@ -46,6 +46,15 @@ class APICaller:
         LOG.debug('Calling API: %s' % api_url)
         resp = requests.post(
             api_url, json=payload, timeout=timeout, headers={'Content-Type': 'application/json'}
-        ).json()
-        ret = resp['data']
-        return ret
+        )
+
+        try:
+            ret = resp.json()
+        except Exception as e:
+            LOG.error(str(e))
+            raise RuntimeError(resp.text)
+
+        try:
+            return ret['data']
+        except KeyError:
+            raise RuntimeError(resp.text)

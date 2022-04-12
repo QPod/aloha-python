@@ -24,7 +24,7 @@ setup(
         'Documentation': 'https://github.com/QPod/aloha/wiki',
     },
 
-    packages=find_packages(where="."),
+    packages=find_packages(where=".", exclude=("app_demo*",)),
     include_package_data=True,
     package_data={},
     platforms='Linux, Mac OS X, Windows',
@@ -34,7 +34,7 @@ setup(
     ],
     extras_require={
         'build': ['Cython'],
-        'service': ['tornado'],
+        'service': ['tornado', 'psutil'],
         'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.1.0'],
         'stream': ['confluent_kafka'],
         'data': ['pandas'],
