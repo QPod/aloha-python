@@ -4,7 +4,7 @@ import pymysql
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
-from .base import password_vault
+from .base import PasswordVault
 from ..logger import LOG
 
 LOG.debug('Version of pymysql = %s' % pymysql.__version__)
@@ -12,6 +12,7 @@ LOG.debug('Version of pymysql = %s' % pymysql.__version__)
 
 class MySqlOperator:
     def __init__(self, db_config, **kwargs):
+        password_vault = PasswordVault.get_vault(db_config.get('vault_type'), db_config.get('vault_config'))
         self._config = {
             'user': db_config['user'],
             'password': password_vault.get_password(db_config['password']),

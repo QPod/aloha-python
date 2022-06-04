@@ -1,7 +1,9 @@
 import hashlib
+from binascii import a2b_hex
+from urllib.parse import quote_plus as urlquote
+
 import requests
 from Crypto.Cipher import AES
-from binascii import a2b_hex
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 from .base import BaseVault
@@ -17,10 +19,7 @@ class CyberArkVault(BaseVault, AesEncryptor):
 
     def __init__(self, url: str, app_id: str, key: str = None, safe: str = 'AIM_ELIS_LAS', folder: str = 'root'):
         super().__init__(key)
-        self.url = url
-        self.app_id = app_id
-        self.safe = safe
-        self.folder = folder
+        self.key, self.url, self.app_id, self.safe, self.folder = key, url, app_id, safe, folder
 
     @staticmethod
     def get_sign(appid, keyvalue):
@@ -33,7 +32,7 @@ class CyberArkVault(BaseVault, AesEncryptor):
         if text is None:
             return None
 
-        cryptor = AES.new(self.auto_fill_key(), AES.MODE_ECB)
+        cryptor = AES.new(self.key_aes, AES.MODE_ECB)
         s = cryptor.decrypt(a2b_hex(text.encode()))
         s = s[0: -s[-1]]
         return s.decode()
@@ -78,6 +77,8 @@ class CyberArkVault(BaseVault, AesEncryptor):
         )
         if key_for_cache not in self._cached:
             pwd = self.get_cyberark_password(object=object, **kwargs)
+            if kwargs.pop('url_quote', True):  # quote/escape password by default
+                pwd = urlquote(pwd)
             self._cached[key_for_cache] = pwd
         else:
             LOG.debug('Using cached CyberArk key: %s' % key_for_cache)
@@ -86,14 +87,12 @@ class CyberArkVault(BaseVault, AesEncryptor):
 
 
 def main():
-    vault = CyberArkVault(
-        url='https://localhost/pidms/rest/pwd/getPassword',
-        app_id='',
-        safe='',
-        folder='root',
-        key='',
+    cfg_cyberark = dict(
+        url='https://localhost/pidms/rest/pwd/getPassword',  # to fill properly
+        app_id='', safe='', folder='root', key='',
     )
-
-    for _ in range(5):
-        pwd = vault.get_password({'object': 'DB-*'})
-        # print(pwd)
+    # from ...settings import SETTINGS
+    # cfg_cyberark = SETTINGS.config['CYBERARK_CONFIG']
+    vault = CyberArkVault(**cfg_cyberark)
+    pwd = vault.get_password({'object': 'PG_'})
+    # print(pwd)

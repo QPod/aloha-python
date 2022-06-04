@@ -1,6 +1,5 @@
 import logging
 import os
-
 from tornado import web, httpserver
 from tornado.routing import HostMatches
 

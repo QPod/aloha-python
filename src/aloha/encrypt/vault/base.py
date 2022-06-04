@@ -21,6 +21,9 @@ class BaseVault(ABC):
 
 
 class DummyVault(BaseVault):
+    def __init__(self, *args, **kwargs):
+        pass
+
     def decrypt_password(self, password):
         return password
 

@@ -2,7 +2,7 @@ __all__ = ('RedisOperator',)
 
 import redis
 
-from .base import password_vault
+from .base import PasswordVault
 from ..logger import LOG
 
 
@@ -11,6 +11,7 @@ class RedisOperator:
         self._check_redis_version()
 
         password = config.get('password', None)
+        password_vault = PasswordVault.get_vault(config.get('vault_type'), config.get('vault_config'))
         _config = {
             'host': config['host'],
             'port': config.get('port', '6379'),
