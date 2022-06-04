@@ -3,8 +3,7 @@ __all__ = ('ElasticSearchOperator',)
 import json
 
 from elasticsearch import Elasticsearch
-
-from .base import password_vault
+from .base import PasswordVault
 from ..logger import LOG
 
 
@@ -12,6 +11,7 @@ class ElasticSearchOperator:
     def __init__(self, config, index_config=None):
         self.es_config = config
 
+        password_vault = PasswordVault.get_vault(config.get('vault_type'), config.get('vault_config'))
         username = config.get('username')
         password = password_vault.get_password(config.get('password'))
 

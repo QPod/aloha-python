@@ -2,8 +2,9 @@ import abc
 import json
 import logging
 from datetime import datetime
-from tornado import web
 from typing import Optional, Awaitable
+
+from tornado import web
 
 from ...encrypt import jwt
 from ...logger import LOG
@@ -16,11 +17,19 @@ class APIHandler(web.RequestHandler):
     LOG = LOG
 
     def __init__(self, *args, **kwargs):
+        self.api_args: Optional[tuple] = None
+        self.api_kwargs: Optional[dict] = None
         super().__init__(*args, **kwargs)
 
     @abc.abstractmethod
     def response(self, *args, **kwargs) -> dict:
         raise NotImplementedError()
+
+    @property
+    def request_id(self):
+        if 'Request-ID' not in self.request.headers:
+            self.request.headers['Request-ID'] = datetime.now().strftime('%Y%m%d-%H%M%S-%f')
+        return self.request.headers.get('Request-ID')
 
     def set_default_headers(self) -> None:
         self.set_header('Content-Type', 'application/json; charset=utf-8')
@@ -33,8 +42,7 @@ class APIHandler(web.RequestHandler):
         if not callable(func_callback):
             return
 
-        body = json.loads(self.request.body.decode('utf-8'))
-        return func_callback(**body)
+        return func_callback(*self.api_args, **self.api_kwargs)
 
     async def prepare(self, ) -> Optional[Awaitable[None]]:
         access_token = self.request.headers.get('Access-Token')
@@ -44,51 +52,59 @@ class APIHandler(web.RequestHandler):
             })
         else:
             secret_key = SETTINGS.config['APP_SECRET_KEY']  # 'HCTECH-ASKBOB-REC:10062462'
-            access_token = jwt.decode(secret_key, access_token)
+            # options = None
+            # TODO: if not validate expiration
+            options = {"verify_exp": False}
+            access_token = jwt.decode(secret_key, access_token, options=options)
             if not isinstance(access_token, dict):
+                LOG.error('Invalid Access-Token found in request for [%s]: %s' % (
+                    str(self.request.full_url()), access_token
+                ))
                 return self.finish({
                     'msg': access_token
                 })
 
+        self.set_header('Request-ID', self.request_id)
+
     async def get(self, *args, **kwargs):
         query = {k: v[0].decode('utf-8') for k, v in self.request.arguments.items()}
-        request_id = self.request.headers.get('Request-ID')
-        if request_id is None:
-            request_id = datetime.now().strftime('%Y%m%d-%H%M%S-%f')
-
+        kwargs.update(query)
         try:
-            self.LOG.debug('GET Request [%s]: %s' % (request_id, query))
-            resp = self.response(**query)  # this call may throw TypeError when argument missing
+            self.LOG.debug('GET Request [%s]: %s' % (self.request_id, kwargs))
+            self.api_args, self.api_kwargs = args or (), kwargs or {}
+            resp = self.response(*self.api_args, **self.api_kwargs)  # this call may throw TypeError when argument missing
         except Exception as e:
             self.LOG.error(e, exc_info=True)
-            self.LOG.info('POST Request [%s]: %s' % (request_id, query))
+            self.LOG.info('GET Request [%s]: %s' % (self.request_id, kwargs))
             return self.finish({'status': 'error', 'message': [str(e)]})
 
-        resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
+        if isinstance(resp, (dict, list)):
+            resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
+        elif isinstance(resp, str):
+            pass
         return self.finish(resp)
 
     async def post(self, *args, **kwargs):
         try:
             body = self.request.body.decode('utf-8')
             data = json.loads(body)
+            kwargs.update(data)
         except json.decoder.JSONDecodeError:  # invalid request body, cannot be parsed as JSON
             return self.finish(_RESP_BAD_REQUEST)
 
-        request_id = self.request.headers.get('Request-ID')
-        if request_id is None:
-            request_id = datetime.now().strftime('%Y%m%d-%H%M%S-%f')
-
         try:
             if self.LOG.level == logging.DEBUG:
-                if len(body) < 1000:
-                    self.LOG.debug('POST Request [%s]: %s' % (request_id, data))
-                else:  # when body is too long, just print first 1000 char
-                    self.LOG.debug('POST Request [%s]: %s' % (request_id, body[:1000]))
-            resp = self.response(**data)  # this call may throw TypeError when argument missing
+                s_kwargs = json.dumps(kwargs, ensure_ascii=False)
+                self.LOG.debug('POST Request [%s]: %s' % (self.request_id, s_kwargs[:1000]))
+            self.api_args, self.api_kwargs = args or (), kwargs or {}
+            resp = self.response(*self.api_args, **self.api_kwargs)  # this call may throw TypeError when argument missing
         except Exception as e:
             self.LOG.error(e, exc_info=True)
-            self.LOG.info('POST Request [%s]: %s' % (request_id, data))
+            self.LOG.info('POST Request [%s]: %s' % (self.request_id, data))
             return self.finish({'status': 'error', 'message': [str(e)]})
 
-        resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
+        if isinstance(resp, (dict, list)):
+            resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
+        elif isinstance(resp, str):
+            pass
         return self.finish(resp)

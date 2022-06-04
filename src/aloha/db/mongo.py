@@ -5,7 +5,7 @@ import json
 
 import pymongo
 
-from .base import password_vault
+from .base import PasswordVault
 from ..logger import LOG
 
 
@@ -56,6 +56,7 @@ class _MongoDBOperation:
             # if `replicaSet` not defined, and host in config is domain name (not IP)
             replicaSet = hosts[0].split('.')[0]  # use the first segment of domain name as replicaSet
 
+        password_vault = PasswordVault.get_vault(config.get('vault_type'), config.get('vault_config'))
         _config = {
             'host': 'mongodb://%s' % ','.join(hosts),
             'port': config.get('port'),

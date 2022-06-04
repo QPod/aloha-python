@@ -1,13 +1,11 @@
-from tornado import web
 from typing import Optional, Awaitable
+
+from tornado import web
 
 
 class PlainHttpHandler(web.RequestHandler):
     def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def set_default_headers(self):
         self.set_header('Access-Control-Allow-Origin', '*')

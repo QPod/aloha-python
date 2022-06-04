@@ -2,7 +2,8 @@ import json
 from datetime import datetime, timedelta
 from typing import Optional
 
-import requests
+from requests import Session
+from requests.adapters import HTTPAdapter, Retry
 
 from ...logger import LOG
 
@@ -13,6 +14,9 @@ except ImportError:
 
 
 class OpenApiClient:
+    retry_method_whitelist = frozenset(['GET', 'POST'])
+    retry_status_forcelist = frozenset({413, 429, 503, 502, 504})
+
     def __init__(self, url_oauth_get_token: str, client_id: str, client_secret: str, grant_type: str = 'client_credentials'):
         self.url_oauth_get_token = url_oauth_get_token
         self.client_id = client_id
@@ -22,13 +26,24 @@ class OpenApiClient:
         self.expires_at = None
         self.access_token = None
 
+    @classmethod
+    def get_request_session(cls, total_retries: int = 10, *args, **kwargs) -> Session:
+        session = Session()
+        # https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#urllib3.util.Retry.DEFAULT_ALLOWED_METHODS
+        retries = Retry(
+            total=total_retries, backoff_factor=0.1, method_whitelist=cls.retry_method_whitelist, status_forcelist=cls.retry_status_forcelist
+        )
+        for prefix in ('http://', 'https://'):
+            session.mount(prefix, HTTPAdapter(max_retries=retries))
+        return session
+
     def get_access_token(self) -> str:
         now = datetime.now()
 
         if self.expires_at is None or self.expires_at > now:
             try:
                 # refresh access_token
-                resp = requests.post(self.url_oauth_get_token, timeout=5, json={
+                resp = self.get_request_session().post(self.url_oauth_get_token, timeout=5, json={
                     'client_id': self.client_id,
                     'client_secret': self.client_secret,
                     'grant_type': self.grant_type
@@ -71,16 +86,16 @@ class OpenApiClient:
         url = self._get_request_url(url_api)
         LOG.debug('Calling ESG POST: %s' % url)
         try:
-            resp = requests.post(url=url, headers=headers, json=body, timeout=timeout)
+            resp = self.get_request_session().post(url=url, headers=headers, json=body, timeout=timeout)
             return self._get_data_from_esg_response(resp)
         except Exception as e:
-            LOG.error('Error calling ESG API [%s]: %s' % (url, str(e)))
+            LOG.error('Error calling ESG API POST [%s]: %s' % (url, str(e)))
 
     def get(self, url_api: str, body: dict, headers: dict = None, timeout: int = 5):
         url = self._get_request_url(url_api)
         LOG.debug('Calling ESG GET: %s' % url)
         try:
-            resp = requests.get(url=url, headers=headers, json=body, timeout=timeout)
+            resp = self.get_request_session().get(url=url, headers=headers, json=body, timeout=timeout)
             return self._get_data_from_esg_response(resp)
         except Exception as e:
-            LOG.error('Error calling ESG API [%s]: %s' % (url, str(e)))
+            LOG.error('Error calling ESG API GET [%s]: %s' % (url, str(e)))

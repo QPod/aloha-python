@@ -4,7 +4,7 @@ import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
-from .base import password_vault
+from .base import PasswordVault
 from ..logger import LOG
 
 LOG.debug('postgres: psycopg2 version = %s' % psycopg2.__version__)
@@ -12,6 +12,7 @@ LOG.debug('postgres: psycopg2 version = %s' % psycopg2.__version__)
 
 class PostgresOperator:
     def __init__(self, db_config, **kwargs):
+        password_vault = PasswordVault.get_vault(db_config.get('vault_type'), db_config.get('vault_config'))
         self._config = {
             'user': db_config['user'],
             'password': password_vault.get_password(db_config.get('password')),

@@ -1,7 +1,4 @@
-import os
-
-from .config.hocon import load_config_from_hocon
-from .config.paths import get_resource_dir, get_config_dir
+from .config import hocon, paths
 
 
 class Settings:
@@ -10,21 +7,18 @@ class Settings:
 
     @property
     def resource_dir(self):
-        return get_resource_dir()
+        return paths.get_resource_dir()
 
     @property
     def config_dir(self):
-        return get_config_dir()
+        return paths.get_config_dir()
 
     @property
     def config(self):
         if self._config is None:
-            # load config items from hocon config files
-            _file_config_main = os.path.join(self.config_dir, 'main.conf')
-            if os.path.exists(_file_config_main):
-                self._config = load_config_from_hocon(_file_config_main)
-            else:
-                self._config = {}
+            config_files = paths.get_config_files()  # by default, use the `main.conf` file in the config_dir
+            self._config = hocon.load_config_from_hocon_files(config_files, base_dir=paths.get_config_dir())
+
         return self._config
 
     def __getitem__(self, item):
