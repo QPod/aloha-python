@@ -1,4 +1,4 @@
-# Secret Varaibles required in GitHub secrets: TWINE_USERNAME, TWINE_PASSWORD
+# Secret Variables required in GitHub secrets: TWINE_USERNAME, TWINE_PASSWORD / TWINE_USERNAME_TEST, TWINE_PASSWORD_TEST
 
 name: CI - PYPI
 
@@ -7,8 +7,10 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
+    paths-ignore: [ "*.md" ]
   pull_request:
     branches: [ main ]
+    paths-ignore: [ "*.md" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -38,13 +40,16 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          TWINE_USERNAME_TEST: ${{ secrets.TWINE_USERNAME_TEST }}
+          TWINE_PASSWORD_TEST: ${{ secrets.TWINE_PASSWORD_TEST }}
         run: |
-          cd src && ls -alh
+          env | sort -f && cd src && ls -alh
           sudo python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
           sudo python setup.py sdist bdist_wheel
           ls -alh ./dist
-          if [ "$GITHUB_REPOSITORY" = "QPod/aloha" ] ; then
-            twine upload dist/* --verbose -u "$TWINE_USERNAME" -p "$TWINE_PASSWORD" ;
-          elif [ ! -z "$TWINE_USERNAME" ]; then
-            twine upload dist/* --verbose -u "$TWINE_USERNAME" -p "$TWINE_PASSWORD" --repository-url "https://test.pypi.org/legacy/" ;
+          if [ "${GITHUB_REPOSITORY}" = "QPod/aloha" ] && [ "${GITHUB_HEAD_REF}" = "main" ] ; then
+            twine upload dist/* --verbose -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ;
+          elif [ ! -z "${TWINE_USERNAME_TEST}" ]; then
+            twine upload dist/* --verbose -u "${TWINE_USERNAME_TEST}" -p "${TWINE_PASSWORD_TEST}" \
+              --repository-url "https://test.pypi.org/legacy/" ;
           fi

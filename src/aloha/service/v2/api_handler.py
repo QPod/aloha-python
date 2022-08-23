@@ -66,6 +66,35 @@ class APIHandler(web.RequestHandler):
 
         self.set_header('Request-ID', self.request_id)
 
+    async def post(self, *args, **kwargs):
+        content_type: str = self.request.headers.get('Content-Type', 'application/json; charset=utf-8')
+        if content_type.startswith('multipart/form-data'):  # only parse files when 'Content-Type' starts with 'multipart/form-data'
+            body_arguments = self.request.body_arguments
+        else:
+            try:
+                body = self.request.body.decode('utf-8')
+                body_arguments = json.loads(body)
+            except (UnicodeDecodeError, json.decoder.JSONDecodeError):  # invalid request body, cannot be parsed as JSON
+                return self.finish(_RESP_BAD_REQUEST)
+        kwargs.update(body_arguments)
+
+        try:
+            if self.LOG.level == logging.DEBUG:
+                s_kwargs = json.dumps(kwargs, ensure_ascii=False)
+                self.LOG.debug('POST Request [%s]: %s' % (self.request_id, s_kwargs[:1000]))
+            self.api_args, self.api_kwargs = args or (), kwargs or {}
+            resp = self.response(*self.api_args, **self.api_kwargs)  # this call may throw TypeError when argument missing
+        except Exception as e:
+            self.LOG.error(e, exc_info=True)
+            self.LOG.info('POST Request [%s]: %s' % (self.request_id, self.request.body))
+            return self.finish({'status': 'error', 'message': [str(e)]})
+
+        if isinstance(resp, (dict, list)):
+            resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
+        elif isinstance(resp, str):
+            pass
+        return self.finish(resp)
+
     async def get(self, *args, **kwargs):
         query = {k: v[0].decode('utf-8') for k, v in self.request.arguments.items()}
         kwargs.update(query)
@@ -76,32 +105,7 @@ class APIHandler(web.RequestHandler):
         except Exception as e:
             self.LOG.error(e, exc_info=True)
             self.LOG.info('GET Request [%s]: %s' % (self.request_id, kwargs))
-            return self.finish({'status': 'error', 'message': [str(e)]})
-
-        if isinstance(resp, (dict, list)):
-            resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
-        elif isinstance(resp, str):
-            pass
-        return self.finish(resp)
-
-    async def post(self, *args, **kwargs):
-        try:
-            body = self.request.body.decode('utf-8')
-            data = json.loads(body)
-            kwargs.update(data)
-        except json.decoder.JSONDecodeError:  # invalid request body, cannot be parsed as JSON
-            return self.finish(_RESP_BAD_REQUEST)
-
-        try:
-            if self.LOG.level == logging.DEBUG:
-                s_kwargs = json.dumps(kwargs, ensure_ascii=False)
-                self.LOG.debug('POST Request [%s]: %s' % (self.request_id, s_kwargs[:1000]))
-            self.api_args, self.api_kwargs = args or (), kwargs or {}
-            resp = self.response(*self.api_args, **self.api_kwargs)  # this call may throw TypeError when argument missing
-        except Exception as e:
-            self.LOG.error(e, exc_info=True)
-            self.LOG.info('POST Request [%s]: %s' % (self.request_id, data))
-            return self.finish({'status': 'error', 'message': [str(e)]})
+            return self.finish({'status': 'error', 'message': [repr(e)]})
 
         if isinstance(resp, (dict, list)):
             resp = json.dumps(resp, ensure_ascii=False, default=str, separators=(',', ':'))
