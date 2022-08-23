@@ -47,7 +47,7 @@ jobs:
           sudo python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
           sudo python setup.py sdist bdist_wheel
           ls -alh ./dist
-          if [ "${GITHUB_REPOSITORY}" = "QPod/aloha" ] && [ "${GITHUB_HEAD_REF}" = "main" ] ; then
+          if [ "${GITHUB_REPOSITORY}" = "QPod/aloha" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
             twine upload dist/* --verbose -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ;
           elif [ ! -z "${TWINE_USERNAME_TEST}" ]; then
             twine upload dist/* --verbose -u "${TWINE_USERNAME_TEST}" -p "${TWINE_PASSWORD_TEST}" \
