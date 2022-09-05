@@ -1,4 +1,4 @@
-from aloha.service.v0 import APIHandler
+from aloha.service.api.v0 import APIHandler
 from aloha.util.sys_cuda import get_cuda_info
 from aloha.util.sys_gpu import get_gpu_info
 from aloha.util.sys_info import get_sys_info

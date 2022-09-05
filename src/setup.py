@@ -29,13 +29,12 @@ setup(
     package_data={},
     platforms='Linux, Mac OS X, Windows',
     zip_safe=False,
-    install_requires=[
-        'pyhocon', 'pycryptodome'
-    ],
+    install_requires=[],
     extras_require={
+        'base': ['pyhocon', 'pycryptodome'],
         'build': ['Cython'],
-        'service': ['tornado', 'psutil'],
-        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.1.0'],
+        'service': ['requests', 'tornado', 'psutil'],
+        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
         'stream': ['confluent_kafka'],
         'data': ['pandas'],
         'report': ['openpyxl>=3']
