@@ -30,11 +30,12 @@ jobs:
 
       - name: pip-install-test
         run: |
-          sudo pip install -UI pip && sudo pip install -UI setuptools wheel twine
+          sudo pip3 install -UI pip && sudo pip3 install -UI setuptools wheel twine pyOpenSSL
           cd src
-          sudo python setup.py sdist bdist_wheel
-          pip install ./dist/*.tar.gz
+          sudo python3 setup.py sdist bdist_wheel
+          pip3 install ./dist/*.tar.gz
           aloha info -v
+          pip3 list | sort
 
       - name: pypi-publish
         env:
@@ -44,8 +45,8 @@ jobs:
           TWINE_PASSWORD_TEST: ${{ secrets.TWINE_PASSWORD_TEST }}
         run: |
           env | sort -f && cd src && ls -alh
-          sudo python -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
-          sudo python setup.py sdist bdist_wheel
+          sudo python3 -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
+          sudo python3 setup.py sdist bdist_wheel
           ls -alh ./dist
           if [ "${GITHUB_REPOSITORY}" = "QPod/aloha" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
             twine upload dist/* --verbose -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ;
