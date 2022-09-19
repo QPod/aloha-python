@@ -1,16 +1,16 @@
 import base64
 import binascii
-from typing import Union
+from typing import Union, Callable, Optional
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 
-_AES_CIPHER_METHODS = {  # FULL_CIPHER_NAME: (dict_params,)
-    "AES/ECB/PKCS5Padding": {'mode': AES.MODE_ECB},
-    # "AES/ECB/NoPadding": {'mode': AES.MODE_ECB},
-    # "AES/CBC/PKCS5Padding": {'mode': AES.MODE_CBC, 'iv': b'0000000000000000'},
-    # "AES/CBC/NoPadding": {'mode': AES.MODE_CBC, 'iv': b'0000000000000000'},
+_AES_CIPHER_METHODS = {  # FULL_CIPHER_NAME: (dict_params, pad_style)
+    "AES/ECB/PKCS5Padding": ({'mode': AES.MODE_ECB}, 'pkcs7'),
+    "AES/ECB/NoPadding": ({'mode': AES.MODE_ECB}, 'pkcs7'),
+    "AES/CBC/PKCS7Padding": ({'mode': AES.MODE_CBC, 'iv': b'0000000000000000'}, 'pkcs7'),
+    "AES/CBC/NoPadding": ({'mode': AES.MODE_CBC, 'iv': b'0000000000000000'}, 'x923'),
 }
 
 
@@ -23,6 +23,8 @@ def _generate_key(key_size: int, method='const') -> bytes:
 
 
 class AesEncryptor:
+    supported_cipher_methods = _AES_CIPHER_METHODS
+
     def __init__(self, key: Union[str, bytes] = None, key_size: int = 16, cipher_name: str = 'AES/ECB/PKCS5Padding'):
         _key = key
         if key is None:
@@ -37,10 +39,13 @@ class AesEncryptor:
         # https://pycryptodome.readthedocs.io/en/latest/src/util/util.html
         self.cipher_name = cipher_name
 
-    def encrypt(self, text: str, output_format='hex') -> Union[str, bytes]:
-        padded = pad(text.encode(), block_size=self.block_size)
+    def encrypt(self, text: str, output_format='hex', func_pad: Optional[Callable] = None) -> Union[str, bytes]:
+        dict_params, pad_style = _AES_CIPHER_METHODS.get(self.cipher_name)
+        if not callable(func_pad):
+            func_pad = lambda x: pad(data, block_size=self.block_size, style=pad_style)
 
-        dict_params = _AES_CIPHER_METHODS.get(self.cipher_name)
+        data = text.encode()
+        padded = func_pad(data)
         cipher = AES.new(key=self.key_aes, **dict_params)
         bytes_crypt = cipher.encrypt(padded)
 
@@ -54,7 +59,7 @@ class AesEncryptor:
             raise ValueError('Unknown output_type [%s]' % output_format)
         return crypt
 
-    def decrypt(self, text: Union[str, bytes], input_format: str = 'hex') -> Union[str, bytes]:
+    def decrypt(self, text: Union[str, bytes], input_format: str = 'hex', func_unpad: Optional[Callable] = None) -> Union[str, bytes]:
         text += (len(text) % 4) * '='
         if input_format == 'hex':
             crypt = binascii.a2b_hex(text)
@@ -64,10 +69,12 @@ class AesEncryptor:
             crypt = text
         else:
             raise ValueError('Unknown output_type [%s]' % input_format)
-        dict_params = _AES_CIPHER_METHODS.get(self.cipher_name)
+        dict_params, pad_style = _AES_CIPHER_METHODS.get(self.cipher_name)
         cipher = AES.new(key=self.key_aes, **dict_params)
         data = cipher.decrypt(crypt)
-        data = unpad(data, block_size=self.block_size)
+        if not callable(func_unpad):
+            func_unpad = lambda x: unpad(x, block_size=self.block_size, style=pad_style)
+        data = func_unpad(data)
         return data.decode('UTF-8')
 
 

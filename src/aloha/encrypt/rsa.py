@@ -21,6 +21,7 @@ _RSA_CIPHER_METHODS = {  # FULL_CIPHER_NAME: (module, dict_params)
 class RsaEncryptor:
     _dict_cache_cipher = {}
     _dict_cache_decipher = {}
+    supported_cipher_methods = _RSA_CIPHER_METHODS
 
     # ref: https://cryptobook.nakov.com/asymmetric-key-ciphers/rsa-encrypt-decrypt-examples
     def __init__(self, key_private: str = None, key_public: str = None, cipher_name: str = 'RSA/ECB/PKCS1Padding'):
