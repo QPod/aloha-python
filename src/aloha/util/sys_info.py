@@ -7,7 +7,7 @@ import psutil
 
 from ..logger import LOG
 
-LOG.info('Using psutil == %s' % psutil.__version__)
+LOG.debug('Using psutil == %s' % psutil.__version__)
 
 
 def get_size(bytes, suffix="B"):
