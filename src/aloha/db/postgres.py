@@ -43,3 +43,7 @@ class PostgresOperator:
         with self.engine.connect() as conn:
             cur = conn.execute(text(sql), *args, **kwargs)
             return cur
+
+    @property
+    def connection_str(self) -> str:
+        return "postgresql://{user}:{password}@{host}:{port}/{dbname}".format(**self._config)

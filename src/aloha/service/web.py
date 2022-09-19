@@ -1,5 +1,6 @@
 import logging
 import os
+
 from tornado import web, httpserver
 from tornado.routing import HostMatches
 
@@ -40,8 +41,12 @@ class WebApplication(web.Application):
         for m in modules:
             _handlers = _load_handlers(m)
             for h in _handlers:
+                (url, class_handler) = h
                 handlers.append(h)
-                LOG.debug('Loaded module %s handler for API:\t%s' % h[::-1])
+                s_log_msg = 'Loaded API module %-50s' % url
+                if LOG.level < logging.INFO:  # more verbose information
+                    s_log_msg += '\t from class %s' % str(class_handler)
+                LOG.info(s_log_msg)
 
         return [
             (HostMatches('(.*)'), handlers)
