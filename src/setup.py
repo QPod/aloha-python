@@ -31,7 +31,7 @@ setup(
     zip_safe=False,
     install_requires=[],
     extras_require={
-        'base': ['pyhocon', 'pycryptodome'],
+        'base': ['attrdict3', 'pyhocon', 'pycryptodome'],
         'build': ['Cython'],
         'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
         'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
