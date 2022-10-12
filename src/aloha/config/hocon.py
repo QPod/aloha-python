@@ -1,3 +1,4 @@
+from attrdict import AttrDict
 from pyhocon import ConfigFactory
 
 
@@ -14,4 +15,4 @@ def load_config_from_hocon_files(config_files: list, base_dir: str):
     f = '\n'.join(s)
 
     config = ConfigFactory.parse_string(content=f, basedir=base_dir).as_plain_ordered_dict()
-    return config
+    return AttrDict(config)
