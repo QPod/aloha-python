@@ -24,20 +24,21 @@ setup(
         'Documentation': 'https://github.com/QPod/aloha/wiki',
     },
 
-    packages=find_packages(where=".", exclude=("app_demo*",)),
+    packages=find_packages(where=".", exclude=("app_common*",)),
     include_package_data=True,
     package_data={},
     platforms='Linux, Mac OS X, Windows',
     zip_safe=False,
     install_requires=[],
     extras_require={
-        'base': ['attrdict3', 'pyhocon', 'pycryptodome'],
+        'base': ['attrdict3', 'pyhocon', 'pycryptodome', 'packaging'],
         'build': ['Cython'],
         'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
         'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
         'stream': ['confluent_kafka'],
         'data': ['pandas'],
-        'report': ['openpyxl>=3']
+        'report': ['openpyxl>=3', 'XlsxWriter'],
+        'test': ['pytest-cov'],
     },
     python_requires='>=3.6',
     entry_points={
@@ -47,7 +48,7 @@ setup(
     },
 
     data_files=[],
-    description='Aloha.',
+    description='Aloha - a versatile Python utility package for building services',
     long_description=long_description,
     long_description_content_type="text/markdown",
 

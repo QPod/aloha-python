@@ -1,6 +1,7 @@
 __all__ = ('RedisOperator',)
 
 import redis
+from packaging import version
 
 from .base import PasswordVault
 from ..logger import LOG
@@ -30,11 +31,11 @@ class RedisOperator:
 
     @staticmethod
     def _check_redis_version() -> bool:
+        ver_min = version.parse('4.1.0')
         valid = False
         try:
-            ver = redis.__version__.split('.')
-            ver = tuple(int(i) for i in ver)
-            if ver > (4, 1, 0):
+            ver_cur = version.parse(redis.__version__)
+            if ver_cur >= ver_min:
                 valid = True
                 LOG.debug('Using redis version = %s' % redis.__version__)
         except Exception as e:

@@ -130,7 +130,7 @@ def get_net_info() -> dict:
     return ret
 
 
-def get_sys_info() -> dict:
+def get_sys_info(*args, **kwargs) -> dict:
     return {
         "os_info": get_os_info(),
         "cpu_info": get_cpu_info(),

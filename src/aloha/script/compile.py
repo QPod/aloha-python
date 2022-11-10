@@ -3,15 +3,15 @@
 
 __all__ = ('build', 'package')
 
-from collections import defaultdict
-
 import argparse
 import glob
 import os
 import shutil
 import time
-from Cython.Build import cythonize
+from collections import defaultdict
 from distutils.core import setup
+
+from Cython.Build import cythonize
 
 
 def _expand(patterns: list = None):

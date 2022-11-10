@@ -1,7 +1,7 @@
 from abc import ABC
 
-from .unit import UnitTestCase
 from aloha.service.api.v2 import APICaller
+from .unit import UnitTestCase
 
 
 class ServiceTestCase(UnitTestCase, ABC, APICaller):

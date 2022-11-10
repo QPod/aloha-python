@@ -3,8 +3,8 @@ from abc import ABC
 
 import requests
 
-from .unit import UnitTestCase
 from aloha.service.api.v1 import APICaller
+from .unit import UnitTestCase
 
 
 class ServiceTestCase(UnitTestCase, ABC, APICaller):
