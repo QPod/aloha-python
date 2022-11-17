@@ -1,6 +1,6 @@
-# 开发调试文档
+# Development Docs
 
-## 开发环境基于源代码调试
+## Live debug on source code using docker
 
 ```bash
 # Firstly, cd to the project root folder (which includes `src`) of the project, and then:  
@@ -12,4 +12,11 @@ docker run -it \
   docker.io/qpod/base:latest bash
   
 python -m aloha.script.start app_common.debug
+```
+
+## Build docker image
+
+```bash
+source tool/tool.sh
+build_image app_common latest tool/app.Dockerfile
 ```

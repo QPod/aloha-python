@@ -1,2 +1,2 @@
 # aloha
-A versatile Python utility package for building services
+`aloha` is a versatile Python utility package for building microservices.

@@ -11,7 +11,10 @@ import time
 from collections import defaultdict
 from distutils.core import setup
 
-from Cython.Build import cythonize
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    raise RuntimeError('Please pip install Cython first!')
 
 
 def _expand(patterns: list = None):
@@ -24,6 +27,7 @@ def _expand(patterns: list = None):
 
 
 def _delete(file_path: str, ignore_errors=True):
+    print('Removing file/folder: %s' % file_path)
     try:
         if os.path.isfile(file_path) or os.path.islink(file_path):
             os.unlink(file_path)
@@ -83,18 +87,17 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
 
     # c code -> dynamic library file
     path_build_tmp = os.path.join(path_build, '.tmp')
-    setup(ext_modules=cythonized, script_args=["build_ext", "-b", path_build, "-t", path_build_tmp, "-j", n_parallel])
+    script_args = ["build_ext", "-b", path_build, "-t", path_build_tmp, "-j", n_parallel]
+    print('Build args: %s' % ' '.join(str(s) for s in script_args))
+    setup(ext_modules=cythonized, script_args=script_args)
 
     # clean up
     for c_module in cythonized:
         for c_file in c_module.sources:
-            os.remove(c_file)
+            _delete(c_file)
     for py_file in target_cythonize:
-        os.remove(py_file)
-
+        _delete(py_file)
     _delete(path_build_tmp)
-
-    print("\n\nSuccessfully finished building package to: ", path_build)
 
 
 def package(base: str = None, dist: str = 'build', exclude: list = None, keep: list = None, copy_others=True, *args, **kwargs):
@@ -102,6 +105,9 @@ def package(base: str = None, dist: str = 'build', exclude: list = None, keep: l
 
     path_base = os.path.abspath(base or './')
     path_dist = os.path.abspath(dist)
+    os.makedirs(path_dist, exist_ok=True)
+    if len(glob.glob(path_dist + '/*')) > 0:
+        raise ValueError('Dist folder [%s] MUST be an empty directory or an non-existing folder!' % path_dist)
 
     folder_name = os.getcwd().split(os.sep)[-1]
     folder_temp = os.path.join('/tmp/build/', folder_name)
@@ -115,12 +121,10 @@ def package(base: str = None, dist: str = 'build', exclude: list = None, keep: l
         keep=keep,  # source files keep as is and not converting to dynamic library
         copy_others=copy_others
     )
-    t = time.time() - t
-    print('Time consumed to build code: %.2f seconds.' % t)
-
-    [_delete(f) for f in glob.glob(path_dist + '/*')]
-    os.makedirs(path_dist, exist_ok=True)
     [shutil.move(f, os.path.join(path_dist, f.split(os.sep)[-1])) for f in glob.glob(folder_temp + '/*')]
+    t = time.time() - t
+    print('\n\nTime consumed to build code: %.2f seconds.' % t)
+    print("Successfully finished building package to: ", path_dist)
 
 
 def main():

@@ -1,3 +1,4 @@
+import sys
 import argparse
 import importlib
 
@@ -11,10 +12,13 @@ def main():
     module = '%s.%s' % (__package__, cmd)
     try:
         module = importlib.import_module(module)
-    except ImportError:
+    except ImportError as e:
         print('Invalid sub-command: %s\n\tFailed to import: %s' % (cmd, module))
+        print(str(e))
         exit(-1)
 
+    sys.argv.pop(0)
+    print('aloha command options: %s' % ''.join(sys.argv))
     func_main = getattr(module, 'main')
 
     exit(func_main())
