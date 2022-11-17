@@ -10,7 +10,7 @@ def setup_logger(logger: logging.Logger, level: int = logging.DEBUG, logger_name
     if not logger.handlers:
         formatter = logging.Formatter(formatter_str or '%(levelname)s> %(asctime)s> %(module)s:%(lineno)s> %(message)s')
 
-        folder = 'logs'
+        folder = os.environ.get('DIR_LOG', 'logs')
         os.makedirs(folder, exist_ok=True)
 
         if module is None:

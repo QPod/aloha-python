@@ -2,6 +2,7 @@ __all__ = ('KafkaOperator',)
 
 import json
 import typing
+
 import confluent_kafka as kafka
 import confluent_kafka.admin as kafka_admin
 

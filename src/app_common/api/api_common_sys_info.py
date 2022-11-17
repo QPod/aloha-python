@@ -1,7 +1,5 @@
 from aloha.service.api.v0 import APIHandler
-from aloha.util.sys_cuda import get_cuda_info
-from aloha.util.sys_gpu import get_gpu_info
-from aloha.util.sys_info import get_sys_info
+from aloha.util import (sys_info, sys_gpu, sys_cuda)
 
 
 class SysStatusInfo(APIHandler):
@@ -14,13 +12,22 @@ class SysStatusInfo(APIHandler):
             kinds = [kind]
 
         dict_func = {
-            "sys": get_sys_info,
-            "gpu": get_gpu_info,
-            "cuda": get_cuda_info,
+            "sys": sys_info.get_sys_info,
+            "os": sys_info.get_os_info,
+            "cpu": sys_info.get_cpu_info,
+            "mem": sys_info.get_mem_info,
+            "disk": sys_info.get_disk_info,
+            "net": sys_info.get_net_info,
+
+            "gpu": sys_gpu.get_gpu_info,
+            "cuda": sys_cuda.get_cuda_info,
+            "cuda-torch": sys_cuda.get_gpu_status_for_torch,
+            "cuda-tf": sys_cuda.get_gpu_status_for_tf,
+            "cuda-paddle": sys_cuda.get_gpu_status_for_paddle,
         }
         ret = {}
         for k in kinds:
-            ret.update({k: dict_func.get(k, get_sys_info)()})
+            ret.update({k: dict_func.get(k, sys_info.get_sys_info)()})
 
         return ret
 

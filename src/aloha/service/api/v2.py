@@ -70,7 +70,7 @@ class APIHandler(AbstractApiHandler, ABC):
 
 class APICaller(AbstractApiClient):
     APP_ID_KEYS = AbstractApiClient.config.get('APP_ID_KEYS', {})
-    APP_SECRET_KEY = AbstractApiClient.config['APP_SECRET_KEY']
+    APP_SECRET_KEY = AbstractApiClient.config.get('APP_SECRET_KEY')
 
     def wrap_request_data(self, data: dict) -> dict:
         assert isinstance(data, dict), "Data object must be a dict!"
