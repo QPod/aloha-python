@@ -38,8 +38,7 @@ ENV PORT_SVC=${PORT_SVC:-80} \
 
 RUN set -ex && pwd && ls -al && sh ./run_config.sh \
  && pip install -U --no-cache-dir pip \
- && ( [ -f ./requirements.txt ] && pip install -U --no-cache-dir -r ./requirements.txt ) \
- && pip list  \
+ && ( [ -f ./requirements.txt ] && pip install -U --no-cache-dir -r ./requirements.txt || true ) && pip list  \
  && rm -rf ~/.cache && ls -al && printenv | sort
 
 VOLUME ${DIR_APP}/logs

@@ -4,6 +4,9 @@ import importlib
 
 
 def main():
+    if '' not in sys.path:  # if start from script, cwd is not include in sys.path
+        sys.path.insert(0, '')
+
     parser = argparse.ArgumentParser()
     parser.add_argument('cmd')
     args, _ = parser.parse_known_args()
