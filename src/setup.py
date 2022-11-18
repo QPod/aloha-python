@@ -34,7 +34,7 @@ setup(
         'base': ['attrdict3', 'pyhocon', 'pycryptodome', 'packaging'],
         'build': ['Cython'],
         'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
-        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
+        'db': ['sqlalchemy<2', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
         'stream': ['confluent_kafka'],
         'data': ['pandas'],
         'report': ['openpyxl>=3', 'XlsxWriter'],

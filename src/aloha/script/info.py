@@ -1,6 +1,5 @@
-def main(**kwargs):
-    print('Aloha!')
+from .. import __version__
 
-    if kwargs.get('version'):
-        from .. import __version__
-        print('Aloha version: %s' % __version__)
+
+def main(**kwargs):
+    print('Aloha! version: %s' % __version__)
