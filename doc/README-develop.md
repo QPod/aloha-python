@@ -8,7 +8,7 @@ docker run -it \
   -v $(pwd):/root/app/ \
   -w /root/app/src \
   --name="app-$(whoami)" \
-  -p 80:80 \
+  -p 8080:80 \
   docker.io/qpod/base:latest bash
   
 python -m aloha.script.start app_common.debug
@@ -19,4 +19,10 @@ python -m aloha.script.start app_common.debug
 ```bash
 source tool/tool.sh
 build_image app_common latest tool/app.Dockerfile
+```
+
+## Develop docs
+
+```bash
+mkdocs serve -f mkdocs.yml -a 0.0.0.0:80
 ```

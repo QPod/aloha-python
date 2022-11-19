@@ -1,0 +1,35 @@
+# build 
+Cython
+
+#  service
+requests
+tornado
+psutil
+pyjwt
+
+#  db
+sqlalchemy<2
+psycopg2-binary
+pymysql
+elasticsearch
+pymongo
+redis>4.2.0
+
+#  stream
+confluent_kafka
+
+#  data
+pandas
+
+#  report
+openpyxl>=3
+XlsxWriter
+
+#  test
+pytest-cov
+
+#  docs
+mkdocs
+mkdocstrings[python]
+markdown-include
+mkdocs-material

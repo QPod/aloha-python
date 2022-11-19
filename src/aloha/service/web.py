@@ -55,7 +55,7 @@ class WebApplication(web.Application):
     def start(self):
         service_settings = self.settings.get('service', {})
 
-        port = service_settings.get('port', 80)
+        port = service_settings.get('port', int(os.environ.get('PORT_SVC', 80)))
         # if overwrite port in param
         port = os.environ.get('port', port)
 
