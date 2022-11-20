@@ -11,6 +11,17 @@ _version = '%s.%02d%02d.%02d%02d' % (_now.year, _now.month, _now.day, _now.hour,
 with open('./aloha/_version.py', 'wt') as fp:
     fp.write('__version__ = "%s"\n' % _version)
 
+dict_extra_requires = {
+    'build': ['Cython'],
+    'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
+    'db': ['sqlalchemy<2', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
+    'stream': ['confluent_kafka'],
+    'data': ['pandas'],
+    'report': ['openpyxl>=3', 'XlsxWriter'],
+    'test': ['pytest-cov'],
+    'docs': ['mkdocs', 'mkdocstrings[python]', 'markdown-include', 'mkdocs-material'],
+}
+
 setup(
     name='aloha',
     version=_version,
@@ -29,16 +40,10 @@ setup(
     package_data={},
     platforms='Linux, Mac OS X, Windows',
     zip_safe=False,
-    install_requires=[],
+    install_requires=['attrdict3', 'pyhocon', 'pycryptodome', 'packaging'],
     extras_require={
-        'base': ['attrdict3', 'pyhocon', 'pycryptodome', 'packaging'],
-        'build': ['Cython'],
-        'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
-        'db': ['sqlalchemy', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
-        'stream': ['confluent_kafka'],
-        'data': ['pandas'],
-        'report': ['openpyxl>=3', 'XlsxWriter'],
-        'test': ['pytest-cov'],
+        **dict_extra_requires,
+        'all': sorted(y for x in dict_extra_requires.values() for y in x),
     },
     python_requires='>=3.6',
     entry_points={

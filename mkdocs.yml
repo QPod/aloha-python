@@ -1,0 +1,63 @@
+site_name: Aloha - a versatile Python library to build microservice.
+repo_url: https://github.com/QPod/aloha
+docs_dir: doc
+theme:
+  name: material
+  highlightjs: true
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - content.tabs.link
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)" # Palette toggle for light mode
+      scheme: default
+      primary: black
+      accent: blues
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)" # Palette toggle for dark mode
+      scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+  - mkdocstrings:
+      handlers: # See: https://mkdocstrings.github.io/python/usage/
+        python:
+          options:
+            docstring_style: sphinx
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+  - markdown_include.include:
+      base_path: .
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+nav:
+  - Introduction: 'index.md'
+  - Get Started: 'README-get-start.md'
+  - Common Tasks: 'README-tasks.md'
+  - Configs: 'README-config.md'
+  - Development Guide: 'README-develop.md'
+  - API Reference: 'api.md'

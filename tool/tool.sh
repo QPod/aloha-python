@@ -48,7 +48,7 @@ clear_images() {
     IMGS_2=$(docker images | grep "${KEYWORD}" | awk '{print $3}') ;
 
     for IMG in $(echo "$IMGS_1 $IMGS_2" | tr " " "\n") ; do
-      docker rmi "${IMG}"; status=$?; echo "[${status}] image removed > ${IMG}";
+      docker rmi "${IMG}" || true; status=$?; echo "[${status}] image removed > ${IMG}";
     done
     docker image prune --force && docker images ;
 }
