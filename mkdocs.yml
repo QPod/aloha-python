@@ -1,5 +1,6 @@
 site_name: Aloha - a versatile Python library to build microservice.
 repo_url: https://github.com/QPod/aloha
+edit_uri: blob/main/doc/
 docs_dir: doc
 theme:
   name: material

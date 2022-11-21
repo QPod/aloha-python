@@ -37,11 +37,9 @@ class CyberArkVault(BaseVault, AesEncryptor):
         s = s[0: -s[-1]]
         return s.decode()
 
-    def get_cyberark_password(self, object=None, **kwargs):
-        if isinstance(object, dict):
-            kwargs.update(object)
-        elif isinstance(object, str):
-            kwargs.update({'object': object})
+    def get_cyberark_password(self, object: str = None, **kwargs):
+        assert isinstance(object, str)
+        kwargs.update({'object': object})
 
         app_id = kwargs.get('app_id', self.app_id)
         data = {
@@ -76,8 +74,11 @@ class CyberArkVault(BaseVault, AesEncryptor):
             app_id=self.app_id, safe=self.safe, folder=self.folder, key=self.key, object=object
         )
         if key_for_cache not in self._cached:
-            pwd = self.get_cyberark_password(object=object, **kwargs)
-            if kwargs.pop('url_quote', True):  # quote/escape password by default
+            kwargs.update(object if isinstance(object, dict) else {'object': object})
+            url_quote = kwargs.get('url_encode', True)
+
+            pwd = self.get_cyberark_password(**kwargs)
+            if url_quote:  # quote/escape password by default
                 pwd = urlquote(pwd)
             self._cached[key_for_cache] = pwd
         else:
