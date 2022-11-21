@@ -11,12 +11,11 @@ class RedisOperator:
     def __init__(self, config):
         self._check_redis_version()
 
-        password = config.get('password', None)
         password_vault = PasswordVault.get_vault(config.get('vault_type'), config.get('vault_config'))
         _config = {
             'host': config['host'],
             'port': config.get('port', '6379'),
-            'password': password_vault.get_password(password),
+            'password': password_vault.get_password(config.get('password', None)),
             'decode_responses': config.get('decode_responses', True),
             'retry_on_timeout': True,
             'max_connections': config.get('max_connections', 1000),

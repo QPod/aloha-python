@@ -1,4 +1,10 @@
-# build 
+# basic
+attrdict3
+pyhocon
+pycryptodome
+packaging
+
+# build
 Cython
 
 #  service

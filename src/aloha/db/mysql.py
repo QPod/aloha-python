@@ -14,11 +14,11 @@ class MySqlOperator:
     def __init__(self, db_config, **kwargs):
         password_vault = PasswordVault.get_vault(db_config.get('vault_type'), db_config.get('vault_config'))
         self._config = {
-            'user': db_config['user'],
-            'password': password_vault.get_password(db_config['password']),
             'host': db_config['host'],
             'port': db_config['port'],
-            'dbname': db_config['dbname']
+            'user': db_config['user'],
+            'password': password_vault.get_password(db_config['password']),
+            'dbname': db_config['dbname'],
         }
 
         try:

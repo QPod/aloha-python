@@ -32,7 +32,7 @@ setup(
     project_urls={
         'Source': 'https://github.com/QPod/aloha',
         'CI Pipeline': 'https://github.com/QPod/aloha/actions',
-        'Documentation': 'https://github.com/QPod/aloha/wiki',
+        'Documentation': 'https://aloha-python.readthedocs.io/',
     },
 
     packages=find_packages(where=".", exclude=("app_common*",)),
