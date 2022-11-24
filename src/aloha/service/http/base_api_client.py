@@ -61,7 +61,4 @@ class AbstractApiClient(ABC):
             LOG.error(str(e))
             raise RuntimeError(resp.text)
 
-        try:
-            return ret['data']
-        except KeyError:
-            raise RuntimeError(resp.text)
+        return ret

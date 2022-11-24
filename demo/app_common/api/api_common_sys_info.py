@@ -1,17 +1,28 @@
+from datetime import datetime
+
 from aloha.service.api.v0 import APIHandler
 from aloha.util import (sys_info, sys_gpu, sys_cuda)
+
+
+def echo(*args, **kwargs):
+    return {
+        'sys_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'),
+        **kwargs
+    }
 
 
 class SysStatusInfo(APIHandler):
     @staticmethod
     def get_sys_info(kind: str = None, **kwargs) -> dict:
-        kinds = ['sys', 'gpu', 'cuda']
-        if kind is None:
+        kinds = ['echo']
+        if kind is None or len(kind) == 0:
             pass
         else:
             kinds = [kind]
 
         dict_func = {
+            "echo": echo,
+
             "sys": sys_info.get_sys_info,
             "os": sys_info.get_os_info,
             "cpu": sys_info.get_cpu_info,
@@ -26,8 +37,10 @@ class SysStatusInfo(APIHandler):
             "cuda-paddle": sys_cuda.get_gpu_status_for_paddle,
         }
         ret = {}
-        for k in kinds:
-            ret.update({k: dict_func.get(k, sys_info.get_sys_info)()})
+        for k in sorted(set(kinds)):
+            if k not in dict_func:
+                k = 'echo'
+            ret.update({k: dict_func.get(k)()})
 
         return ret
 

@@ -23,7 +23,7 @@ def get_size(bytes, suffix="B"):
         bytes /= factor
 
 
-def get_os_info() -> dict:
+def get_os_info(*args, **kwargs) -> dict:
     ret = {}
 
     boot_time = datetime.fromtimestamp(psutil.boot_time())
@@ -34,7 +34,7 @@ def get_os_info() -> dict:
     return ret
 
 
-def get_cpu_info() -> dict:
+def get_cpu_info(*args, **kwargs) -> dict:
     cpu_freq = psutil.cpu_freq()  # CPU frequencies
     ret = {
         "num_cores_physical": psutil.cpu_count(logical=False),
@@ -50,7 +50,7 @@ def get_cpu_info() -> dict:
     return ret
 
 
-def get_mem_info() -> dict:
+def get_mem_info(*args, **kwargs) -> dict:
     svmem = psutil.virtual_memory()
     swap = psutil.swap_memory()
 
@@ -67,7 +67,7 @@ def get_mem_info() -> dict:
     }
 
 
-def get_disk_info() -> dict:
+def get_disk_info(*args, **kwargs) -> dict:
     # get IO statistics since boot
     disk_io = psutil.disk_io_counters()
     partitions = psutil.disk_partitions()
@@ -101,7 +101,7 @@ def get_disk_info() -> dict:
     return ret
 
 
-def get_net_info() -> dict:
+def get_net_info(*args, **kwargs) -> dict:
     # get IO statistics since boot
     net_io = psutil.net_io_counters()
 

@@ -7,7 +7,7 @@ from ..logger import LOG
 Status = namedtuple('Status', 'version,gpu_availability')
 
 
-def get_gpu_status_for_tf() -> dict:
+def get_gpu_status_for_tf(*args, **kwargs) -> dict:
     status = Status(version=None, gpu_availability=False)
     try:
         import tensorflow as tf
@@ -22,7 +22,7 @@ def get_gpu_status_for_tf() -> dict:
     return status._asdict()
 
 
-def get_gpu_status_for_torch() -> dict:
+def get_gpu_status_for_torch(*args, **kwargs) -> dict:
     status = Status(version=None, gpu_availability=False)
     try:
         import torch
@@ -37,7 +37,7 @@ def get_gpu_status_for_torch() -> dict:
     return status._asdict()
 
 
-def get_gpu_status_for_paddle() -> dict:
+def get_gpu_status_for_paddle(*args, **kwargs) -> dict:
     status = Status(version=None, gpu_availability=False)
     try:
         import paddle

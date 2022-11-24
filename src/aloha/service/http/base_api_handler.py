@@ -64,3 +64,20 @@ class AbstractApiHandler(web.RequestHandler, ABC):
     def request_param(self) -> dict:
         url_arguments: dict = {k: v[0].decode('utf-8') for k, v in self.request.arguments.items()}
         return url_arguments
+
+
+class DefaultHandler404(AbstractApiHandler):
+    def response(self, *args, **kwargs) -> Optional[dict]:
+        return self.prepare()
+
+    def prepare(self):  # for all methods
+        msg = {
+            "code": 404,
+            "status": "error",
+            "message": [
+                'Requested URL cannot be found: %s' % self.request.uri
+            ]
+        }
+        msg = json.dumps(msg, ensure_ascii=False, default=str, separators=(',', ':'))
+        self.set_status(404, reason='Not Found')
+        self.finish(msg)
