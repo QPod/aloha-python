@@ -4,7 +4,8 @@ def main():
     from aloha.settings import SETTINGS
 
     modules_to_load = [
-        'app_common.api.api_common_sys_info'
+        "app_common.api.api_common_sys_info",
+        "app_common.api.api_common_query_postgres",
     ]
 
     if 'service' not in SETTINGS.config:

@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC, abstractmethod
+from urllib.parse import urljoin
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -13,6 +14,10 @@ class AbstractApiClient(ABC):
     RETRY_METHOD_WHITELIST: frozenset = frozenset(['GET', 'POST'])
     RETRY_STATUS_FORCELIST: frozenset = frozenset({413, 429, 503, 502, 504})
     config = SETTINGS.config
+
+    def __init__(self, url_endpoint: str = None, *args, **kwargs):
+        self.url_endpoint = url_endpoint or ''
+        LOG.debug('API Caller URL endpoint set to: %s' % self.url_endpoint)
 
     @classmethod
     def get_request_session(cls, total_retries: int = 3, *args, **kwargs) -> requests.Session:
@@ -52,7 +57,7 @@ class AbstractApiClient(ABC):
         LOG.debug('Calling api: %s' % api_url)
         session = self.get_request_session()
         resp = session.post(
-            api_url, json=payload, timeout=timeout, headers=self.get_headers()
+            urljoin(self.url_endpoint, api_url), json=payload, timeout=timeout, headers=self.get_headers()
         )
 
         try:
