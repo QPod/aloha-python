@@ -59,7 +59,7 @@ class WebApplication(web.Application):
         # if overwrite port in param
         port = os.environ.get('port', port)
 
-        num_process = int(service_settings.get('num_process', 1))
-        LOG.info('Starting service with [%s] process at port [%s]...', num_process, port)
+        num_process = int(service_settings.get('num_process', 0))
+        LOG.info('Starting service with [%s] process at port [%s]...', num_process or 'undefined', port)
         self.http_server.bind(port)
         self.http_server.start(num_processes=num_process)

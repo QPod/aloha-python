@@ -2,7 +2,7 @@ import jwt
 
 from ..logger import LOG
 
-LOG.debug('Version of pyjwt = %s' % jwt.__version__.__str__())
+LOG.debug('Using pyjwt == %s' % jwt.__version__.__str__())
 
 
 def encode(

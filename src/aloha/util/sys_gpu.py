@@ -12,7 +12,7 @@ try:
 
     LOG.debug('Using pynvml == %s' % nvml.__version__)
 except ImportError:
-    LOG.error('Package `pynvml` NOT installed! Cannot get GPU info.')
+    LOG.warn('Package `pynvml` NOT installed! Cannot get GPU info.')
     nvml = nvidia_smi = None
 
 Device = namedtuple('Device', field_names='index,name,arch')
