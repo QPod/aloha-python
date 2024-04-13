@@ -48,15 +48,19 @@ def get_config_files() -> list:
 
     files = files_config.split(',')
     ret = []
+    msgs = []
     for f in files:
         file = get_config_dir(f)
         if not os.path.exists(file):
-            warnings.warn('Expecting config file [%s] but it does not exists!' % file)
+            msgs.append('Expecting config file [%s] but it does not exists!' % file)
         else:
             print('  ---> Loading config file [%s]' % file)
             ret.append(os.path.expandvars(f))
     if len(ret) == 0:
-        warnings.warn('No config files set properly, EMPTY config will be used!')
+        msgs.append('No config files set properly, EMPTY config will be used!')
+
+    if len(msgs) > 0:
+        warnings.warn('\n'.join(msgs))
     return ret
 
 

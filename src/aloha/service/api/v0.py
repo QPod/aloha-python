@@ -13,8 +13,10 @@ class APIHandler(AbstractApiHandler, ABC):
     }
 
     async def post(self, *args, **kwargs):
-        body_arguments = self.request_body
-        kwargs.update(body_arguments)
+        req_body = self.request_body
+
+        if req_body is not None:  # body_arguments
+            kwargs.update(req_body)
 
         resp = dict(code=5200, message=['success'])
         try:
