@@ -51,7 +51,7 @@ class AbstractApiHandler(web.RequestHandler, ABC):
         body_arguments: dict = Optional[None]
 
         if content_type.startswith('multipart/form-data'):  # only parse files when 'Content-Type' starts with 'multipart/form-data'
-            body_arguments = self.request.body_arguments
+            body_arguments = self.request_param  # self.request.body_arguments
         else:
             try:
                 body = self.request.body.decode('utf-8')
@@ -62,8 +62,16 @@ class AbstractApiHandler(web.RequestHandler, ABC):
 
     @property
     def request_param(self) -> dict:
-        url_arguments: dict = {k: v[0].decode('utf-8') for k, v in self.request.arguments.items()}
-        return url_arguments
+        ret: dict = {}
+        for k, v in self.request.arguments.items():
+            val = v[0].decode('utf-8')
+            try:
+                value = json.loads(val)
+            except json.JSONDecodeError:
+                value = val
+            ret[k] = value
+
+        return ret
 
 
 class DefaultHandler404(AbstractApiHandler):

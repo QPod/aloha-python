@@ -6,6 +6,7 @@ def main():
     modules_to_load = [
         "app_common.api.api_common_sys_info",
         "app_common.api.api_common_query_postgres",
+        "app_common.api.api_multipart",
     ]
 
     if 'service' not in SETTINGS.config:
