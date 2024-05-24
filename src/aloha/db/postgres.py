@@ -1,13 +1,13 @@
 __all__ = ('PostgresOperator',)
 
-import psycopg2
+import psycopg
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
 from .base import PasswordVault
 from ..logger import LOG
 
-LOG.debug('postgres: psycopg2 version = %s' % psycopg2.__version__)
+LOG.debug('postgres: psycopg2 version = %s' % psycopg.__version__)
 
 
 class PostgresOperator:
@@ -26,8 +26,8 @@ class PostgresOperator:
 
         try:
             self.engine = create_engine(
-                'postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}'.format(**self._config),
-                connect_args=connect_args, client_encoding='utf8', encoding='utf-8',
+                'postgresql+psycopg://{user}:{password}@{host}:{port}/{dbname}'.format(**self._config),
+                connect_args=connect_args, client_encoding='utf8',
                 pool_size=20, max_overflow=10, pool_pre_ping=True, **kwargs
             )
             LOG.debug("PostgresSQL connected: {host}:{port}/{dbname}".format(**self._config))
