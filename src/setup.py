@@ -14,7 +14,7 @@ with open('./aloha/_version.py', 'wt') as fp:
 dict_extra_requires = {
     'build': ['Cython'],
     'service': ['requests', 'tornado', 'psutil', 'pyjwt'],
-    'db': ['sqlalchemy<2', 'psycopg2-binary', 'pymysql', 'elasticsearch', 'pymongo', 'redis>4.2.0'],
+    'db': ['sqlalchemy', 'psycopg[binary]', 'pymysql', 'elasticsearch', 'pymongo', 'redis'],
     'stream': ['confluent_kafka'],
     'data': ['pandas'],
     'report': ['openpyxl>=3', 'XlsxWriter'],
