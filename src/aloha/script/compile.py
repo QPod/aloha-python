@@ -49,11 +49,19 @@ def build(base: str = None, dist: str = 'build', exclude: list = None, keep: lis
     for dir_path, dir_names, file_names in os.walk(path_base):
         dir_name = dir_path.split(os.sep)[-1]  # name of the current directory
 
-        if dir_path.startswith(path_build) or dir_path in files_exclude:
-            continue  # skip: folder for build output, and excluded folders
-
+        flag_skip: bool = False
         if dir_name.startswith('.') or (os.sep + '.' in dir_path):
-            continue  # hidden folders and sub-folders
+            flag_skip = True  # hidden folders and sub-folders
+        elif dir_path.startswith(path_build):
+            flag_skip = True  # skip: folder for build output, and excluded folders
+        else:
+            for f in files_exclude:
+                if dir_path.startswith(f):
+                    flag_skip = True
+                    break
+
+        if flag_skip:
+            continue
 
         for file in file_names:
             (name, extension), path = os.path.splitext(file), os.path.join(dir_path, file)
