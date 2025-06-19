@@ -1,6 +1,7 @@
 __all__ = ('get_resource_dir', 'get_config_dir', 'get_current_module_dir', 'get_project_base_dir', 'path_join')
 
 import os
+import sys
 import warnings
 
 
@@ -24,7 +25,6 @@ def get_config_dir(*args) -> str:
     if dir_config is None or len(dir_config.strip()) == 0:
         dir_config = 'config'
     dir_config = path_join(dir_resource, dir_config, *args)
-    # print(' ---> Using config dir:', dir_config)
     return dir_config
 
 
@@ -54,7 +54,7 @@ def get_config_files() -> list:
         if not os.path.exists(file):
             msgs.append('Expecting config file [%s] but it does not exists!' % file)
         else:
-            print('  ---> Loading config file [%s]' % file)
+            print('  ---> Loading config file [%s]' % file, file=sys.stderr)
             ret.append(os.path.expandvars(f))
     if len(ret) == 0:
         msgs.append('No config files set properly, EMPTY config will be used!')
