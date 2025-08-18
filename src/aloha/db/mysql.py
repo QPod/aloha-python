@@ -24,7 +24,7 @@ class MySqlOperator:
         try:
             self.db = create_engine(
                 'mysql+pymysql://{user}:{password}@{host}:{port}/{dbname}'.format(**self._config),
-                encoding='utf-8', pool_size=50, pool_recycle=500, pool_pre_ping=True, **kwargs
+                pool_size=50, pool_recycle=500, pool_pre_ping=True, **kwargs
             )
             LOG.debug("MySQL connected: {host}:{port}/{dbname}".format(**self._config))
         except Exception as e:

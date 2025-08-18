@@ -5,9 +5,13 @@ import queue
 import threading
 import time
 
-from redis import Redis
-
 from .base import BaseStreamer, BaseWorker, TIMEOUT, TIME_SLEEP, logger
+from ...logger import LOG
+
+try:
+    from redis import Redis
+except ImportError:
+    LOG.warn('redis not installed, service.streamer.RedisStreamer will no be available!')
 
 
 class RedisWorker(BaseWorker):

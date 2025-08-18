@@ -1,10 +1,8 @@
 # Secret Variables required in GitHub secrets: TWINE_USERNAME, TWINE_PASSWORD / TWINE_USERNAME_TEST, TWINE_PASSWORD_TEST
 
-name: build
+name: build-pip-publish
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
     paths-ignore: [ "*.md" ]
@@ -26,7 +24,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       # sudo python setup.py install clean --all
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: pip-install-test
         run: |
@@ -48,7 +46,7 @@ jobs:
           sudo python3 -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
           sudo python3 setup.py sdist bdist_wheel
           ls -alh ./dist
-          if [ "${GITHUB_REPOSITORY}" = "QPod/aloha" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
+          if [ "${GITHUB_REPOSITORY}" = "QPod/aloha-python" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
             twine upload dist/* --verbose -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ;
           elif [ ! -z "${TWINE_USERNAME_TEST}" ]; then
             twine upload dist/* --verbose -u "${TWINE_USERNAME_TEST}" -p "${TWINE_PASSWORD_TEST}" \

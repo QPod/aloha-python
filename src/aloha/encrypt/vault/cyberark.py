@@ -11,7 +11,8 @@ from ...encrypt.aes import AesEncryptor
 from ...logger import LOG
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGHT:!DH:!aNULL'
+if hasattr(requests.packages.urllib3.util.ssl_, 'DEFAULT_CIPHERS'):
+    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGHT:!DH:!aNULL'
 
 
 class CyberArkVault(BaseVault, AesEncryptor):
