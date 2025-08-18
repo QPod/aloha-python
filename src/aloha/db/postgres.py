@@ -7,7 +7,7 @@ from sqlalchemy.sql import text
 from .base import PasswordVault
 from ..logger import LOG
 
-LOG.debug('postgres: psycopg version = %s' % psycopg2.__version__)
+LOG.debug('postgres: psycopg version = %s' % psycopg.__version__)
 
 
 class PostgresOperator:
