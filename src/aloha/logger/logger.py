@@ -17,8 +17,8 @@ def setup_logger(logger: logging.Logger, level: int = logging.DEBUG, logger_name
             from ..settings import SETTINGS
             module = SETTINGS.config.get('APP_MODULE') or os.environ.get('APP_MODULE', 'default')
 
-        if logger_name is not None and len(logger_name) > 0:
-            module = '%s_%s' % (logger_name, module)
+        # if logger_name is not None and len(logger_name) > 0:
+        #     module = '%s_%s' % (logger_name, module)
 
         path_file = [module, socket.gethostname(), 'p%s' % os.getpid()]  # module, hostname, pid
         path_file = '_'.join(str(i) for i in path_file if i is not None)
@@ -34,7 +34,10 @@ def setup_logger(logger: logging.Logger, level: int = logging.DEBUG, logger_name
         logger.setLevel(level)
 
 
-def get_logger(level=logging.DEBUG, logger_name: str = None, *args, **kwargs) -> logging.Logger:
+def get_logger(level=logging.DEBUG, logger_name: str | None = None, *args, **kwargs) -> logging.Logger:
+    if logger_name is None:
+        logger_name = 'default'
+    
     logger = logging.getLogger(logger_name)
 
     if isinstance(level, str):

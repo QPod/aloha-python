@@ -37,18 +37,17 @@ jobs:
 
       - name: pypi-publish
         env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-          TWINE_USERNAME_TEST: ${{ secrets.TWINE_USERNAME_TEST }}
           TWINE_PASSWORD_TEST: ${{ secrets.TWINE_PASSWORD_TEST }}
         run: |
           env | sort -f && cd src && ls -alh
           sudo python3 -c "import fcntl; fcntl.fcntl(1, fcntl.F_SETFL, 0)"
           sudo python3 setup.py sdist bdist_wheel
           ls -alh ./dist
+
           if [ "${GITHUB_REPOSITORY}" = "QPod/aloha-python" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
-            twine upload dist/* --verbose -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" ;
-          elif [ ! -z "${TWINE_USERNAME_TEST}" ]; then
-            twine upload dist/* --verbose -u "${TWINE_USERNAME_TEST}" -p "${TWINE_PASSWORD_TEST}" \
-              --repository-url "https://test.pypi.org/legacy/" ;
+            URL_REPOSITORY="https://upload.pypi.org/legacy/"
+          else
+            URL_REPOSITORY="https://test.pypi.org/legacy/"
           fi
+          twine upload dist/* --verbose -u "__token__" -p "${TWINE_PASSWORD_TEST}" --repository-url "${URL_REPOSITORY}" ;
