@@ -46,8 +46,8 @@ jobs:
           ls -alh ./dist
 
           if [ "${GITHUB_REPOSITORY}" = "QPod/aloha-python" ] && [ "${GITHUB_REF_NAME}" = "main" ] ; then
-            URL_REPOSITORY="https://upload.pypi.org/legacy/"
+            URL_REPOSITORY="https://upload.pypi.org/legacy/" ; P=${TWINE_PASSWORD} ;
           else
-            URL_REPOSITORY="https://test.pypi.org/legacy/"
+            URL_REPOSITORY="https://test.pypi.org/legacy/"   ; P=${TWINE_PASSWORD_TEST} ;
           fi
-          twine upload dist/* --verbose -u "__token__" -p "${TWINE_PASSWORD_TEST}" --repository-url "${URL_REPOSITORY}" ;
+          twine upload dist/* --verbose -u "__token__" -p "${P}" --repository-url "${URL_REPOSITORY}" ;
