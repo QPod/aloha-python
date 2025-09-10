@@ -20,14 +20,20 @@ Please generously STAR★ our project or donate to us!
 [![Donate-AliPay](https://img.shields.io/badge/Donate-Alipay-blue.svg)](https://raw.githubusercontent.com/wiki/haobibo/resources/img/Donate-AliPay.png)
 [![Donate-WeChat](https://img.shields.io/badge/Donate-WeChat-green.svg)](https://raw.githubusercontent.com/wiki/haobibo/resources/img/Donate-WeChat.png)
 
-- For documentation, visit: [📚 Document & 中文文档](https://aloha-python.readthedocs.io/)
-
 - For questions, try DeepWiki: [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QPod/aloha-python)
 
 - To contribute or talk to a human: [![Open an Issue on GitHub](https://img.shields.io/github/issues/QPod/aloha-python)](https://github.com/QPod/aloha-python/issues) [![Join the Discord Chat](https://img.shields.io/badge/Discuss_on-Discord-green)](https://discord.gg/kHUzgQxgbJ)
 
 ## Getting started
 
+Refer to[📚 Document & 中文文档](https://aloha-python.readthedocs.io/) for detailed introduction.
+
 ```shell
 pip install aloha[all]
+```
+
+And then: 
+```python
+from aloha.logger import LOG
+from aloha.settings import SETTINGS as S
 ```
