@@ -12,13 +12,12 @@ LOG.debug('duckdb version = %s, duckdb_engine = %s ' % (duckdb.__version__, duck
 
 class DuckOperator:
     def __init__(self, db_config, **kwargs):
-        """
-        db_config example:
+        """db_config example:
         {
-            "path": "/path/to/db.duckdb",     # 数据库文件路径，使用 ":memory:" 表示内存模式
-            "schema": "sales",                # 可选，默认 'main'
-            "read_only": True,                # 可选，默认 False (内存模式下强制为 False)
-            "config": {"memory_limit": "500mb"}# 可选，DuckDB 连接配置
+            "path": "/path/to/db.duckdb",     # file path of duckdb, use ":memory:" for in-memory mode
+            "schema": "sales",                # optional, 'main' by default
+            "read_only": True,                # optional, False by default, (will set to False if in in-memory mode)
+            "config": {"memory_limit": "500mb"}, # optional, duckdb connection configs
         }
         """
         self._config = {
@@ -28,10 +27,10 @@ class DuckOperator:
             'config': db_config.get('config', {}),
         }
 
-        if not self._config['path'] or self._config['path'] == ':memory:':  # 标准化内存模式路径
+        if not self._config['path'] or self._config['path'] == ':memory:':  # in-memroy mode
             self._config['path'] = ':memory:'
 
-            if self._config['read_only']:  # 内存数据库不支持只读模式
+            if self._config['read_only']:  # in-memory mode cannot be read-only
                 LOG.warning("In-memory database cannot be read-only. Setting read_only=False.")
                 self._config['read_only'] = False
 
@@ -50,16 +49,14 @@ class DuckOperator:
             ).connect()
 
             self._initialize_schema()
-
-            LOG.debug(
-                f"DuckDB connected: {self._config['path']} [schema={self._config['schema']}, read_only={self._config['read_only']}]"
-            )
+            msg = f"DuckDB connected: {self._config['path']} [schema={self._config['schema']}, read_only={self._config['read_only']}]"
+            LOG.debug(msg)
         except Exception as e:
             LOG.exception(e)
             raise RuntimeError('Failed to connect to DuckDB')
 
     def _prepare_database(self):
-        """准备数据库文件和目录"""
+        """Prepare the database file and its parent directory."""
         path = self._config['path']
         path_obj = Path(path)
 
