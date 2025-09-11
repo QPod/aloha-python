@@ -25,9 +25,10 @@ class DuckOperator:
             'schema': db_config.get('schema', 'main'),
             'read_only': bool(db_config.get('read_only', False)),
             'config': db_config.get('config', {}),
+            'auto_commit': db_config.get('auto_commit', True),
         }
 
-        if not self._config['path'] or self._config['path'] == ':memory:':  # in-memroy mode
+        if not self._config['path'] or self._config['path'] == ':memory:':  # in-memory mode
             self._config['path'] = ':memory:'
 
             if self._config['read_only']:  # in-memory mode cannot be read-only
@@ -39,14 +40,14 @@ class DuckOperator:
 
         try:
             str_connection = f"duckdb:///{self._config['path']}"
-            self.conn = create_engine(
+            self.engine = create_engine(
                 str_connection,
                 connect_args={
                     'read_only': self._config['read_only'],
                     'config': self._config['config']
                 },
                 **kwargs
-            ).connect()
+            )
 
             self._initialize_schema()
             msg = f"DuckDB connected: {self._config['path']} [schema={self._config['schema']}, read_only={self._config['read_only']}]"
@@ -89,7 +90,7 @@ class DuckOperator:
 
         try:
             if self._config['read_only']:
-                result = self.conn.execute(
+                result = self.engine.connext().execute(
                     text("SELECT schema_name FROM information_schema.schemata WHERE schema_name = :schema"),
                     {'schema': self._config['schema']}
                 )
@@ -98,21 +99,24 @@ class DuckOperator:
                         f"Schema '{self._config['schema']}' does not exist and read_only=True"
                     )
             else:
-                self.conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {self._config['schema']}"))
+                self.engine.connect().execute(text(f"CREATE SCHEMA IF NOT EXISTS {self._config['schema']}"))
 
-            self.conn.execute(text(f"SET schema '{self._config['schema']}'"))
+            self.engine.connect().execute(text(f"SET schema '{self._config['schema']}'"))
         except Exception as e:
             raise RuntimeError(f'Failed to initialize schema: {e}')
 
     @property
     def connection(self):
-        return self.conn
+        return self.engine
 
-    def execute_query(self, sql, auto_commit: bool = True, *args, **kwargs):
-        cur = self.conn.execute(text(sql), *args, **kwargs)
-        if auto_commit:
-            self.conn.commit()
-        return cur
+    conn = connection
+
+    def execute_query(self, sql, *args, **kwargs):
+        with self.engine.connect() as conn:
+            cur = conn.execute(text(sql), *args, *kwargs)
+            if self._config.get('auto_commit', True):
+                conn.commit()
+            return cur
 
     @property
     def connection_str(self) -> str:
