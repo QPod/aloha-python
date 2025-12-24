@@ -1,0 +1,26 @@
+{
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll.ruff": "explicit"
+    }
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "dbcode.dbcode", // mtxr.sqltools, dbcode.dbcode, ReneSaarsoo.sql-formatter-vsc
+    "editor.formatOnSave": true
+  },
+  "ruff.lineLength": 128,
+  "ruff.configuration": {
+    "format": {
+      "quote-style": "double"
+    }
+  }
+}

@@ -4,11 +4,10 @@ import oracledb
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
-
 from .base import PasswordVault
 from ..logger import LOG
 
-LOG.debug('oracledb version = %s' % oracledb.__version__)
+LOG.debug("oracledb version = %s" % oracledb.__version__)
 
 
 class OracledbOperator:
@@ -38,7 +37,7 @@ class OracledbOperator:
         if 'lib_dir' in db_config:  # use Thick mode
             try:
                 oracledb.init_oracle_client(lib_dir=db_config['lib_dir'])
-                LOG.info("Oracle client initialized in THICK mode from: %s" % db_config['lib_dir'])
+                LOG.info("Oracle client initialized in THICK mode from: %s" % db_config["lib_dir"])
             except Exception as e:
                 LOG.warning(f"Warning: {e}")
                 raise RuntimeError(f"Failed to initialize Oracle client: {e}")
@@ -47,9 +46,9 @@ class OracledbOperator:
         sid = db_config.get("sid")
 
         if service_name:  # using service_name (recommended)
-            dsn = oracledb.makedsn(db_config['host'],  db_config['port'],  service_name=service_name)
+            dsn = oracledb.makedsn(db_config["host"],  db_config["port"],  service_name=service_name)
         elif sid:  # using SID
-            dsn = oracledb.makedsn(db_config['host'], db_config['port'], sid=sid)
+            dsn = oracledb.makedsn(db_config["host"], db_config["port"], sid=sid)
         else:
             raise ValueError("Oracle config must specify service_name or sid")
 
