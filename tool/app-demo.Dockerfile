@@ -1,5 +1,5 @@
 ARG BASE_NAMESPACE="docker.io"
-ARG BASE_IMG="qpod/base:latest"
+ARG BASE_IMG="labnow/base:latest"
 ARG DIR_APP="/root/app"
 ARG MIRROR_PROFILE="common"
 

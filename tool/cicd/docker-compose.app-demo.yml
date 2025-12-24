@@ -1,0 +1,28 @@
+name: ${PROJECT_NAME:-DEV-app-demo}
+
+services:
+  dev-app-demo:
+    container_name: ${CONTAINER_NAME:-dev-app-demo}
+    hostname: ${CONTAINER_NAME:-dev-app-demo}
+    build:
+      context: ../../
+      dockerfile: src/dev-app-demo.Dockerfile
+      args:
+        - ENABLE_CODE_BUILD=false
+        - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-aliyun-pub}
+      pull: true
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-aliyun-pub}
+      - ENV_PROFILE=${ENV_PROFILE:-DEV}
+    # env_file: ["../credentials/DEV-app-demo.env"]
+    user: "0:0"
+    ports: ["${PORT_APP:-40000}:9000", "${PORT_WEB:-43000}:3000"]
+    volumes:
+      - ../../doc:/root/doc:rw
+      - ../../notebook:/root/notebook:rw
+      - ../../src:/root/src:rw
+    working_dir: /root/src
+    command: "tail -f /dev/null"
