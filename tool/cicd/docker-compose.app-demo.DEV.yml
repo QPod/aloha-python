@@ -6,16 +6,16 @@ services:
     hostname: ${CONTAINER_NAME:-dev-app-demo}
     build:
       context: ../../
-      dockerfile: src/dev-app-demo.Dockerfile
+      dockerfile: tool/dev-demo.Dockerfile
       args:
         - ENABLE_CODE_BUILD=false
-        - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-aliyun-pub}
+        - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-default}
       pull: true
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
-      - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-aliyun-pub}
+      - PROFILE_LOCALIZE=${PROFILE_LOCALIZE:-default}
       - ENV_PROFILE=${ENV_PROFILE:-DEV}
     # env_file: ["../credentials/DEV-app-demo.env"]
     user: "0:0"
