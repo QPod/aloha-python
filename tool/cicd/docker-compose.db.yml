@@ -21,6 +21,7 @@ services:
       PG_PRELOAD_LIBS: pg_duckdb,pg_search,pg_cron
     volumes:
       - ${DIR_PG_DATA:-/data/data-pg-common}:/var/lib/postgresql/data:rw
+      # sudo chmod -R 777 /data/data-pg-common
       - ../../src/resource/db:/data/mapp-ihealth/sql:rw
       # - ./sql:/docker-entrypoint-initdb.d:rw
     networks: ["net-db-common"]

@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 from .base import PasswordVault
 from ..logger import LOG
 
-LOG.debug('Version of oracledb = %s' % oracledb.__version__)
+LOG.debug('oracledb version = %s' % oracledb.__version__)
 
 
 class OracledbOperator:
@@ -27,22 +27,21 @@ class OracledbOperator:
         }
         """
 
+        password_vault = PasswordVault.get_vault(db_config.get('vault_type'), db_config.get('vault_config'))
         self._config = {
             'host': db_config['host'],
             'port': db_config['port'],
             'user': db_config['user'],
-            'password': db_config['password'],
+            'password': password_vault.get_password(db_config.get('password')),
         }
 
         if 'lib_dir' in db_config:  # use Thick mode
             try:
                 oracledb.init_oracle_client(lib_dir=db_config['lib_dir'])
-                print("Oracle client initialized in THICK mode from: %s" % db_config['lib_dir'])
+                LOG.info("Oracle client initialized in THICK mode from: %s" % db_config['lib_dir'])
             except Exception as e:
-                print(f"Warning: {e}")
+                LOG.warning(f"Warning: {e}")
                 raise RuntimeError(f"Failed to initialize Oracle client: {e}")
-
-            print("is_thin =", oracledb.is_thin_mode())
 
         service_name = db_config.get("service_name")
         sid = db_config.get("sid")
@@ -59,22 +58,19 @@ class OracledbOperator:
             self.engine = create_engine(
                 "oracle+oracledb://{user}:{password}@".format(**self._config),
                 connect_args={"dsn": dsn},
-                pool_size=20,
-                max_overflow=10,
-                pool_pre_ping=True,
-                **kwargs
+                pool_size=20, max_overflow=10, pool_pre_ping=True, **kwargs
             )
             msg = "OracleDB connected: {host}:{port}".format(**self._config)
             print(msg)
         except Exception as e:
-            raise RuntimeError(f"Failed to connect to OracleDB: {e}")
+            LOG.error(e)
+            raise RuntimeError(f"Failed to connect to OracleDB")
 
     @property
     def connection(self):
         return self.engine
 
     def execute_query(self, sql, *args, **kwargs):
-        """returns SQLAlchemy CursorResult"""
         with self.engine.connect() as conn:
             cur = conn.execute(text(sql), *args, **kwargs)
             return cur
