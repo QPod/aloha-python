@@ -1,5 +1,6 @@
 name: ${PROJECT_NAME:-DEV-app-demo}
 
+
 services:
   dev-app-demo:
     container_name: ${CONTAINER_NAME:-dev-app-demo}
@@ -19,10 +20,11 @@ services:
       - ENV_PROFILE=${ENV_PROFILE:-DEV}
     # env_file: ["../credentials/DEV-app-demo.env"]
     user: "0:0"
-    ports: ["${PORT_APP:-40000}:9000", "${PORT_WEB:-43000}:3000"]
+    ports: ["${PORT_APP:-9000}:9000", "${PORT_WEB:-3000}:3000"]
     volumes:
       - ../../doc:/root/doc:rw
       - ../../notebook:/root/notebook:rw
       - ../../src:/root/src:rw
-    working_dir: /root/src
+      - ../../demo:/root/demo:rw
+    working_dir: /root
     command: "tail -f /dev/null"

@@ -52,7 +52,6 @@ echo "Action:          $ACTION"
 echo "Compose:         $COMPOSE"
 echo "----------------------------------------"
 
-docker network create net-ailab-proxy ||  docker network create net-db-common || true ;
 
 case "$ACTION" in
   up)

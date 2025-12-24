@@ -1,3 +1,5 @@
+__all__ = ("LOG", "get_logger")
+
 from .logger import get_logger
 from ..settings import SETTINGS
 

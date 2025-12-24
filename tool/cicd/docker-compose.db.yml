@@ -1,0 +1,28 @@
+name: com-common-db-postgres
+
+networks:
+  net-db-common:
+    name: net-db-common
+    external: false
+
+
+services:
+  db-postgres-common:
+    container_name: db-postgres-common
+    hostname: db-postgres-common
+    image: quay.io/labnow/postgres-16-ext
+    pull_policy: if_not_present
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sys
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PG_CRON_DB: postgres
+      PG_PRELOAD_LIBS: pg_duckdb,pg_search,pg_cron
+    volumes:
+      - ${DIR_PG_DATA:-/data/data-pg-common}:/var/lib/postgresql/data:rw
+      - ../../src/resource/db:/data/mapp-ihealth/sql:rw
+      # - ./sql:/docker-entrypoint-initdb.d:rw
+    networks: ["net-db-common"]
+    ports: ["5432:5432"]
+    # su postgres && psql -d postgres -U postgres
